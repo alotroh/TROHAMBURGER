@@ -154,10 +154,11 @@ import burger from '../assets/media/burger-hero.png';
 
       // Поворот растёт со скроллом (вниз — по часовой, вверх — обратно).
       const rot = y * 0.05;
-      // Плавное приближение: разгоняется на первых ~3000px, дальше почти стоит.
-      const scale = 1 + Math.min(y, 3000) / 3000 * 1.35;
+      // Плавное приближение до предела: разгоняется на первых ~2000px и
+      // упирается в потолок ~1.5×, чтобы бургер не занимал весь экран.
+      const scale = 1 + Math.min(y, 2000) / 2000 * 0.5;
       // Лёгкий подъём вверх при прокрутке вниз.
-      const lift = -Math.min(y, 4000) * 0.03;
+      const lift = -Math.min(y, 2600) * 0.03;
 
       orbit.style.transform =
         `translate(-50%, calc(-50% + ${lift}px)) rotate(${rot}deg) scale(${scale})`;

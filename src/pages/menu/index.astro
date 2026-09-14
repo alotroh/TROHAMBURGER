@@ -2,17 +2,21 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PhotoSlot from '../../components/PhotoSlot.astro';
 import { MENU } from '../../data/menu.mjs';
+import { BURGER_PHOTOS } from '../../data/media.mjs';
 import { CONTACTS, BUSINESS } from '../../config/site.mjs';
 import { restaurantSchema } from '../../config/schema.mjs';
 
 const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
 
-// Фото-слот к каждой категории (что снять для «шапки» раздела).
+// Обложка категории: у «Бургеров» — реальное фото, у остальных — слот с
+// подписью, что снять.
 const catPhoto = {
-  burgers: 'Три-четыре бургера рядом на доске, разные, вид сверху под углом. Горизонтально.',
   sides: 'Картошка фри, кольца и стрипсы в корзинках, флэтлей на тёмном.',
   sauces: 'Ряд из шести чашек с разными соусами, вид сверху.',
   drinks: 'Лимонады и коктейль в стекле в ряд, запотевшие, боковой свет.',
+};
+const catImage = {
+  burgers: BURGER_PHOTOS['troha-dabl'],
 };
 ---
 
@@ -47,7 +51,7 @@ const catPhoto = {
 
         <div class="menu-cat__grid">
           <div class="menu-cat__photo reveal">
-            <PhotoSlot label={cat.title} note={catPhoto[cat.id]} ratio="4/5" sizes="(max-width: 940px) 90vw, 34vw" />
+            <PhotoSlot label={cat.title} note={catPhoto[cat.id]} image={catImage[cat.id]} alt={`${cat.title} — TROHAMBURGER`} ratio="4/5" sizes="(max-width: 940px) 90vw, 34vw" />
           </div>
 
           <ul class="price-list reveal">
@@ -59,7 +63,7 @@ const catPhoto = {
                     {it.tag && <span class={`tag tag--${it.tag}`}>{it.tag}</span>}
                   </span>
                   <span class="price-row__desc muted">{it.desc}</span>
-                  <span class="price-row__slot">📸 фото: {it.photo}</span>
+                  {it.photo && <span class="price-row__slot">📸 фото: {it.photo}</span>}
                 </div>
                 <div class="price-row__meta">
                   <span class="price-row__weight">{it.weight}</span>

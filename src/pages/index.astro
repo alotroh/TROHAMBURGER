@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PhotoSlot from '../components/PhotoSlot.astro';
 import { BURGERS, FACTS } from '../data/menu.mjs';
+import { BURGER_PHOTOS } from '../data/media.mjs';
 import { websiteSchema, restaurantSchema } from '../config/schema.mjs';
 
 const jsonLd = [websiteSchema(), restaurantSchema({ image: '/og-cover.svg' })];
@@ -111,7 +112,7 @@ const steps = [
         {BURGERS.map((b, i) => (
           <article class="bcard reveal" style={`--i:${i % 4}`}>
             <div class="bcard__media">
-              <PhotoSlot label={b.name} note={b.photo} ratio="4/3" sizes="(max-width: 720px) 92vw, 30vw" />
+              <PhotoSlot label={b.name} image={BURGER_PHOTOS[b.slug]} alt={`Бургер ${b.name}`} ratio="4/3" sizes="(max-width: 720px) 92vw, 30vw" />
               {b.tag && <span class={`tag tag--${b.tag} bcard__tag`}>{b.tag}</span>}
             </div>
             <div class="bcard__body">
