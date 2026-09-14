@@ -17,7 +17,6 @@ import burger from '../assets/media/burger-hero.png';
 ---
 
 <div class="stage" aria-hidden="true">
-  <div class="stage__glow"></div>
   <div class="stage__orbit" data-burger-orbit>
     <Image
       src={burger}
@@ -41,24 +40,12 @@ import burger from '../assets/media/burger-hero.png';
     position: fixed;
     inset: 0;
     z-index: -2;
-    background:
-      radial-gradient(120% 90% at 50% 42%, #17120c 0%, #0a0806 55%, #050403 100%);
+    /* Центр сцены = цвет фона самого снимка бургера (#29190b), плавно уходит в
+       почти-чёрный к краям. Так фон картинки сливается со сценой — нет ни
+       «прямоугольника», ни яркого ореола вокруг бургера. */
+    background: radial-gradient(46% 56% at 50% 46%, #29190b 0%, #160d07 52%, #0a0806 100%);
     overflow: hidden;
     pointer-events: none;
-  }
-
-  /* Тёплое свечение под бургером — «жар от гриля» */
-  .stage__glow {
-    position: absolute;
-    left: 50%;
-    top: 44%;
-    width: min(90vmin, 900px);
-    aspect-ratio: 1;
-    transform: translate(-50%, -50%);
-    background:
-      radial-gradient(circle, rgba(255, 158, 0, 0.24) 0%, rgba(232, 64, 31, 0.12) 34%, rgba(255, 158, 0, 0) 66%);
-    filter: blur(8px);
-    animation: glowPulse 5.5s ease-in-out infinite alternate;
   }
 
   .stage__orbit {
@@ -74,11 +61,10 @@ import burger from '../assets/media/burger-hero.png';
     display: block;
     width: min(88vmin, 760px);
     height: auto;
-    /* PNG бургера на чёрном фоне → screen убирает чёрный, а радиальная маска
-       мягко растворяет прямоугольные края в тёмной сцене. Вместе — бесшовно. */
-    mix-blend-mode: screen;
-    -webkit-mask-image: radial-gradient(60% 64% at 50% 47%, #000 52%, rgba(0,0,0,0) 82%);
-    mask-image: radial-gradient(60% 64% at 50% 47%, #000 52%, rgba(0,0,0,0) 82%);
+    /* Без screen-блендинга: фон снимка совпадает по цвету со сценой, поэтому
+       картинку просто мягко растворяем маской по краям — стык не виден. */
+    -webkit-mask-image: radial-gradient(56% 60% at 50% 48%, #000 64%, rgba(0,0,0,0) 92%);
+    mask-image: radial-gradient(56% 60% at 50% 48%, #000 64%, rgba(0,0,0,0) 92%);
     animation: burgerBob 6s ease-in-out infinite;
     transform-origin: center 46%;
   }
@@ -120,10 +106,6 @@ import burger from '../assets/media/burger-hero.png';
     0%, 100% { transform: translateY(0) rotate(0deg); }
     50% { transform: translateY(-10px) rotate(0.6deg); }
   }
-  @keyframes glowPulse {
-    0% { opacity: 0.75; transform: translate(-50%, -50%) scale(1); }
-    100% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
-  }
   @keyframes steamRise {
     0% { transform: translateY(0) scale(0.7); opacity: 0; }
     20% { opacity: 0.6; }
@@ -135,7 +117,6 @@ import burger from '../assets/media/burger-hero.png';
   }
   @media (prefers-reduced-motion: reduce) {
     .stage__img,
-    .stage__glow,
     .stage__steam span { animation: none; }
   }
 </style>

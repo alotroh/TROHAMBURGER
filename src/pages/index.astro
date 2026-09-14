@@ -19,7 +19,7 @@ const steps = [
 ];
 ---
 
-<BaseLayout seoKey="home" transparentHeader={true} jsonLd={jsonLd}>
+<BaseLayout seoKey="home" transparentHeader={true} showStickyCta={false} jsonLd={jsonLd}>
   <!-- 01 · HERO — бургер крутится за текстом -->
   <section class="hero" aria-labelledby="hero-title">
     <div class="container hero__top">
@@ -105,15 +105,32 @@ const steps = [
       <div class="section-head reveal">
         <span class="index-num">02 · Наши бургеры</span>
         <h2 id="burgers-title">Выбирай <span class="flame">свой</span></h2>
-        <p class="muted">Фото на карточках — слоты под реальную съёмку. В подписи написано, что снять на каждое место.</p>
+        <p class="muted">Нажми на бургер — он добавится в корзину. Кнопкой <b>−</b> на карточке убираешь лишнее. Собери свой заказ.</p>
       </div>
 
-      <div class="burger-grid">
+      <div class="burger-grid" data-burger-grid>
         {BURGERS.map((b, i) => (
-          <article class="bcard reveal" style={`--i:${i % 4}`}>
+          <article
+            class="bcard reveal"
+            style={`--i:${i % 4}`}
+            data-burger
+            data-slug={b.slug}
+            data-name={b.name}
+            data-price={b.price}
+            role="button"
+            tabindex="0"
+            aria-label={`Добавить «${b.name}» в корзину, ${b.price} рублей`}
+          >
             <div class="bcard__media">
               <PhotoSlot label={b.name} image={BURGER_PHOTOS[b.slug]} alt={`Бургер ${b.name}`} ratio="4/3" sizes="(max-width: 720px) 92vw, 30vw" />
               {b.tag && <span class={`tag tag--${b.tag} bcard__tag`}>{b.tag}</span>}
+              <span class="bcard__add" aria-hidden="true"><span class="bcard__add-ico">+</span>в корзину</span>
+              <div class="bcard__qtyctrl" data-qty-ctrl hidden>
+                <button class="bcard__minus" data-minus type="button" aria-label={`Убрать одну «${b.name}»`}>−</button>
+                <span class="bcard__count" data-count aria-live="polite">0</span>
+                <span class="bcard__plus" data-plus aria-hidden="true">+</span>
+              </div>
+              <span class="bcard__flyup" data-flyup aria-hidden="true">+1</span>
             </div>
             <div class="bcard__body">
               <div class="bcard__head">
@@ -234,6 +251,32 @@ const steps = [
       </div>
     </div>
   </section>
+
+  <!-- КОРЗИНА (появляется, когда что-то выбрано) -->
+  <div class="cart" data-cart>
+    <button class="cart__bar" data-cart-open type="button" aria-label="Открыть корзину">
+      <span class="cart__ico">🛒</span>
+      <span class="cart__meta">
+        <span class="cart__count"><span data-cart-count>0</span> в заказе</span>
+        <span class="cart__sum"><span data-cart-sum>0</span> ₽</span>
+      </span>
+      <span class="cart__go">Оформить →</span>
+    </button>
+
+    <div class="cart__drawer" data-cart-drawer hidden>
+      <div class="cart__head">
+        <span class="cart__title">Ваш заказ</span>
+        <button class="cart__close" data-cart-close type="button" aria-label="Свернуть корзину">✕</button>
+      </div>
+      <ul class="cart__list" data-cart-list></ul>
+      <div class="cart__foot">
+        <span>Итого</span>
+        <span class="cart__total"><span data-cart-total>0</span> ₽</span>
+      </div>
+      <a class="btn btn--ember cart__checkout" href="/menu/#zakaz">Оформить заказ <span class="arrow" aria-hidden="true">→</span></a>
+      <button class="cart__clear" data-cart-clear type="button">Очистить корзину</button>
+    </div>
+  </div>
 </BaseLayout>
 
 <style>
@@ -363,17 +406,83 @@ const steps = [
   /* ---------- ВИТРИНА ---------- */
   .burger-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1.25rem, 2vw, 1.75rem); }
   .bcard {
+    position: relative;
     display: flex;
     flex-direction: column;
     background: var(--char-3);
     border: 1px solid var(--line-soft);
     border-radius: var(--radius);
     overflow: hidden;
-    transition: transform 0.4s var(--ease), border-color 0.4s var(--ease);
+    cursor: pointer;
+    transition: transform 0.4s var(--ease), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
   }
-  .bcard:hover { transform: translateY(-6px); border-color: rgba(255,180,0,0.4); }
+  .bcard:hover { transform: translateY(-6px); border-color: rgba(255,180,0,0.5); }
+  .bcard:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
+  .bcard:active { transform: translateY(-2px) scale(0.99); }
+  /* Бургер в корзине — подсвечен */
+  .bcard.in-cart { border-color: var(--amber); box-shadow: 0 0 0 1px var(--amber), 0 18px 40px -22px rgba(255,180,0,0.6); }
   .bcard__media { position: relative; }
   .bcard__tag { position: absolute; top: 0.75rem; left: 0.75rem; z-index: 2; }
+
+  /* Подсказка «+ в корзину» — видна при наведении, если бургера ещё нет в корзине */
+  .bcard__add {
+    position: absolute;
+    right: 0.75rem; bottom: 0.75rem;
+    z-index: 2;
+    display: inline-flex; align-items: center; gap: 0.35em;
+    font-family: var(--font-display); font-weight: 600; font-size: 0.82rem;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    color: #1a1206; background: var(--amber);
+    padding: 0.45em 0.8em; border-radius: 999px;
+    opacity: 0; transform: translateY(8px);
+    transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+    pointer-events: none;
+  }
+  .bcard__add-ico { font-size: 1.05em; font-weight: 700; }
+  .bcard:hover .bcard__add { opacity: 1; transform: none; }
+  .bcard.in-cart .bcard__add { display: none; }
+
+  /* Контрол количества — виден, когда бургер в корзине */
+  .bcard__qtyctrl {
+    position: absolute;
+    right: 0.75rem; bottom: 0.75rem;
+    z-index: 3;
+    display: inline-flex; align-items: center; gap: 0.15rem;
+    background: var(--amber);
+    border-radius: 999px;
+    padding: 0.2rem;
+    box-shadow: 0 8px 20px -8px rgba(0,0,0,0.6);
+  }
+  .bcard__qtyctrl[hidden] { display: none; }
+  .bcard__minus, .bcard__plus {
+    width: 2rem; height: 2rem;
+    display: grid; place-items: center;
+    border: 0; border-radius: 50%;
+    background: rgba(26,18,6,0.12);
+    color: #1a1206;
+    font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; line-height: 1;
+    cursor: pointer;
+  }
+  .bcard__minus:hover, .bcard__plus:hover { background: rgba(26,18,6,0.28); }
+  .bcard__count {
+    min-width: 1.6rem; text-align: center;
+    font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: #1a1206;
+  }
+  /* Всплывающее «+1» при добавлении */
+  .bcard__flyup {
+    position: absolute;
+    right: 1.4rem; bottom: 2.5rem;
+    z-index: 4;
+    font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; color: var(--amber);
+    opacity: 0; pointer-events: none;
+  }
+  .bcard__flyup.pop { animation: flyUp 0.7s var(--ease) forwards; }
+  @keyframes flyUp {
+    0% { opacity: 0; transform: translateY(0) scale(0.7); }
+    30% { opacity: 1; transform: translateY(-10px) scale(1.1); }
+    100% { opacity: 0; transform: translateY(-38px) scale(1); }
+  }
+
   .bcard__body { padding: 1.1rem 1.2rem 1.3rem; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
   .bcard__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; }
   .bcard__name { font-size: 1.3rem; }
@@ -381,6 +490,72 @@ const steps = [
   .bcard__desc { font-size: 0.9rem; line-height: 1.5; flex: 1; }
   .bcard__weight { font-size: 0.78rem; color: var(--ink-mute); letter-spacing: 0.05em; }
   .burgers__cta { margin-top: clamp(2rem, 4vw, 3rem); text-align: center; }
+
+  /* ---------- КОРЗИНА (плавающая) ---------- */
+  .cart {
+    position: fixed;
+    z-index: 95;
+    right: clamp(1rem, 3vw, 2rem);
+    bottom: clamp(1rem, 3vw, 2rem);
+    width: min(360px, calc(100vw - 2rem));
+    opacity: 0; transform: translateY(20px);
+    pointer-events: none;
+    transition: opacity 0.4s var(--ease), transform 0.4s var(--ease-back);
+  }
+  .cart.is-active { opacity: 1; transform: none; pointer-events: auto; }
+  .cart__bar {
+    width: 100%;
+    display: flex; align-items: center; gap: 0.9rem;
+    padding: 0.85rem 1.1rem;
+    background: var(--amber); color: #1a1206;
+    border: 0; border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 18px 40px -16px rgba(255,180,0,0.7);
+    transition: transform 0.3s var(--ease-back);
+  }
+  .cart__bar:hover { transform: translateY(-2px); }
+  .cart__ico { font-size: 1.4rem; }
+  .cart__meta { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.1; margin-right: auto; }
+  .cart__count { font-size: 0.78rem; font-weight: 600; }
+  .cart__sum { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; }
+  .cart__go { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; }
+
+  .cart__drawer {
+    position: absolute;
+    right: 0; bottom: calc(100% + 0.75rem);
+    width: 100%;
+    background: var(--char-3);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.2rem 1.3rem;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.7);
+  }
+  .cart__drawer[hidden] { display: none; }
+  .cart__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+  .cart__title { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: 1.15rem; }
+  .cart__close { background: transparent; border: 0; color: var(--ink-soft); font-size: 1.1rem; cursor: pointer; }
+  .cart__close:hover { color: var(--amber); }
+  .cart__list { list-style: none; padding: 0; margin: 0 0 0.75rem; display: grid; gap: 0.6rem; max-height: 46vh; overflow-y: auto; }
+  .cart-row { display: flex; align-items: center; gap: 0.75rem; }
+  .cart-row__name { flex: 1; font-weight: 600; font-size: 0.95rem; }
+  .cart-row__name small { display: block; color: var(--ink-mute); font-weight: 400; font-size: 0.8rem; }
+  .cart-row__ctrl { display: inline-flex; align-items: center; gap: 0.15rem; }
+  .cart-row__btn {
+    width: 1.7rem; height: 1.7rem; display: grid; place-items: center;
+    border: 1px solid var(--line); border-radius: 50%; background: var(--char-4); color: var(--cream);
+    font-family: var(--font-display); font-size: 1.1rem; line-height: 1; cursor: pointer;
+  }
+  .cart-row__btn:hover { border-color: var(--amber); color: var(--amber); }
+  .cart-row__q { min-width: 1.4rem; text-align: center; font-family: var(--font-display); font-weight: 700; }
+  .cart-row__sum { min-width: 4.5rem; text-align: right; font-family: var(--font-display); font-weight: 700; color: var(--amber); }
+  .cart__foot { display: flex; align-items: baseline; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--line); font-family: var(--font-display); text-transform: uppercase; }
+  .cart__total { font-weight: 700; font-size: 1.4rem; color: var(--amber); }
+  .cart__checkout { width: 100%; justify-content: center; margin-top: 0.9rem; }
+  .cart__clear { display: block; width: 100%; margin-top: 0.6rem; background: transparent; border: 0; color: var(--ink-mute); font-size: 0.82rem; cursor: pointer; }
+  .cart__clear:hover { color: var(--ember); }
+  @media (max-width: 760px) {
+    .cart { left: 1rem; right: 1rem; width: auto; }
+  }
 
   /* ---------- КАК ГОТОВИМ ---------- */
   .process__inner { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: start; }
@@ -455,3 +630,130 @@ const steps = [
     .gallery__cell--wide { grid-column: span 2; }
   }
 </style>
+
+<script>
+  // ---------- КОРЗИНА ----------
+  // Клик по карточке бургера добавляет его в корзину, кнопка «−» убирает.
+  // Состояние храним в localStorage, чтобы не пропадало при перезагрузке.
+  type Cart = Record<string, number>;
+  const KEY = 'troha_cart';
+
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-burger]'));
+  const cartEl = document.querySelector<HTMLElement>('[data-cart]');
+
+  if (cards.length && cartEl) {
+    // Справочник бургеров из data-атрибутов карточек.
+    const catalog: Record<string, { name: string; price: number }> = {};
+    cards.forEach((c) => {
+      const slug = c.dataset.slug!;
+      catalog[slug] = { name: c.dataset.name || '', price: Number(c.dataset.price) || 0 };
+    });
+
+    const load = (): Cart => {
+      try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
+      catch { return {}; }
+    };
+    const save = (c: Cart) => { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch {} };
+
+    let cart: Cart = load();
+
+    const countEl = cartEl.querySelector('[data-cart-count]')!;
+    const sumEl = cartEl.querySelector('[data-cart-sum]')!;
+    const totalEl = cartEl.querySelector('[data-cart-total]')!;
+    const listEl = cartEl.querySelector<HTMLElement>('[data-cart-list]')!;
+    const drawer = cartEl.querySelector<HTMLElement>('[data-cart-drawer]')!;
+
+    const totals = () => {
+      let n = 0, sum = 0;
+      for (const slug in cart) { n += cart[slug]; sum += cart[slug] * (catalog[slug]?.price || 0); }
+      return { n, sum };
+    };
+
+    const fmt = (v: number) => v.toLocaleString('ru-RU');
+
+    const renderCards = () => {
+      cards.forEach((c) => {
+        const slug = c.dataset.slug!;
+        const q = cart[slug] || 0;
+        const ctrl = c.querySelector<HTMLElement>('[data-qty-ctrl]')!;
+        const count = c.querySelector<HTMLElement>('[data-count]')!;
+        c.classList.toggle('in-cart', q > 0);
+        ctrl.hidden = q === 0;
+        count.textContent = String(q);
+      });
+    };
+
+    const renderCart = () => {
+      const { n, sum } = totals();
+      countEl.textContent = String(n);
+      sumEl.textContent = fmt(sum);
+      totalEl.textContent = fmt(sum);
+      cartEl.classList.toggle('is-active', n > 0);
+      if (n === 0) drawer.hidden = true;
+
+      // строки в выдвижной корзине
+      listEl.innerHTML = '';
+      for (const slug in cart) {
+        const q = cart[slug];
+        if (!q) continue;
+        const item = catalog[slug];
+        const li = document.createElement('li');
+        li.className = 'cart-row';
+        li.innerHTML =
+          `<span class="cart-row__name">${item.name}<small>${fmt(item.price)} ₽</small></span>` +
+          `<span class="cart-row__ctrl">` +
+            `<button class="cart-row__btn" data-dec="${slug}" aria-label="Убрать одну">−</button>` +
+            `<span class="cart-row__q">${q}</span>` +
+            `<button class="cart-row__btn" data-inc="${slug}" aria-label="Добавить одну">+</button>` +
+          `</span>` +
+          `<span class="cart-row__sum">${fmt(q * item.price)} ₽</span>`;
+        listEl.appendChild(li);
+      }
+    };
+
+    const render = () => { renderCards(); renderCart(); };
+
+    const add = (slug: string, card?: HTMLElement) => {
+      cart[slug] = (cart[slug] || 0) + 1;
+      save(cart); render();
+      if (card) {
+        const fly = card.querySelector<HTMLElement>('[data-flyup]');
+        if (fly) { fly.classList.remove('pop'); void fly.offsetWidth; fly.classList.add('pop'); }
+      }
+    };
+    const remove = (slug: string) => {
+      if (!cart[slug]) return;
+      cart[slug] -= 1;
+      if (cart[slug] <= 0) delete cart[slug];
+      save(cart); render();
+    };
+
+    // Клик по карточке = +1 (но не по кнопкам управления количеством).
+    cards.forEach((card) => {
+      const slug = card.dataset.slug!;
+      card.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('[data-minus],[data-plus]')) return;
+        add(slug, card);
+      });
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); add(slug, card); }
+      });
+      card.querySelector('[data-minus]')?.addEventListener('click', (e) => { e.stopPropagation(); remove(slug); });
+      card.querySelector('[data-plus]')?.addEventListener('click', (e) => { e.stopPropagation(); add(slug, card); });
+    });
+
+    // Выдвижная корзина: открыть/закрыть, +/- в строках, очистить.
+    cartEl.querySelector('[data-cart-open]')?.addEventListener('click', () => { drawer.hidden = !drawer.hidden; });
+    cartEl.querySelector('[data-cart-close]')?.addEventListener('click', () => { drawer.hidden = true; });
+    cartEl.querySelector('[data-cart-clear]')?.addEventListener('click', () => { cart = {}; save(cart); render(); });
+    listEl.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      const inc = t.getAttribute('data-inc');
+      const dec = t.getAttribute('data-dec');
+      if (inc) add(inc);
+      if (dec) remove(dec);
+    });
+
+    render();
+  }
+</script>
