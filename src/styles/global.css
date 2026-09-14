@@ -1,0 +1,403 @@
+/* ==================================================================
+   TROHAMBURGER — CHARCOAL & FIRE
+   Тёмная смэш-бургерная: уголь, жёлтый жар, огонь. Характер — через
+   крупную типографику, рукописные штампы и живой контент, а не через
+   градиенты и стекло.
+   ================================================================== */
+
+/* -------- Токены -------- */
+:root {
+  /* Уголь — фоновая группа */
+  --char: #0d0b09;        /* самый глубокий уголь (за бургером) */
+  --char-2: #141210;      /* поверхности */
+  --char-3: #1c1916;      /* карточки */
+  --char-4: #262019;      /* поднятые карточки/hover */
+
+  /* Тёплый кремовый текст */
+  --cream: #f6efe1;
+  --cream-soft: rgba(246, 239, 225, 0.72);
+  --cream-mute: rgba(246, 239, 225, 0.52);
+
+  /* Огонь и жар — акценты */
+  --amber: #ffb400;       /* основной жёлтый жар */
+  --amber-deep: #ff9e00;  /* глубже, для градиентов */
+  --ember: #e8401f;       /* огненно-красный */
+  --ember-deep: #c22f14;
+  --char-yolk: #ffd24a;   /* светлый жёлтый — блик */
+
+  /* Линии */
+  --line: rgba(246, 239, 225, 0.13);
+  --line-soft: rgba(246, 239, 225, 0.07);
+
+  /* Семантика */
+  --bg: var(--char);
+  --ink: var(--cream);
+  --ink-soft: var(--cream-soft);
+  --ink-mute: var(--cream-mute);
+  --accent: var(--amber);
+  --accent-ink: var(--amber);
+
+  /* Зерно — тонкая плёнка поверх тёмного, чтобы фон не был «пластиковым» */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0.4 0.4 0.4 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* Типографика */
+  --font-display: 'Oswald', 'PT Sans Narrow', 'Arial Narrow', system-ui, sans-serif;
+  --font-hand: 'Caveat', 'Comic Sans MS', cursive;
+  --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  /* Сетка и ритм */
+  --maxw: 1280px;
+  --maxw-text: 720px;
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  --section-y: clamp(4rem, 9vw, 8rem);
+  --radius: 14px;
+  --radius-sm: 8px;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur: 0.5s;
+
+  color-scheme: dark;
+}
+
+/* -------- Сброс -------- */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--char);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.08rem);
+  line-height: 1.65;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Тонкое зерно: статичный слой ПОД контентом (z-index:-1). Без mix-blend —
+   полупрозрачная плёнка поверх тёмного фона, дёшево для композитинга. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--grain);
+  opacity: 0.22;
+}
+
+img, picture, video { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+
+/* -------- Типографика -------- */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-wrap: balance;
+}
+h1 { font-size: clamp(2.9rem, 1.6rem + 5.6vw, 6.4rem); }
+h2 { font-size: clamp(2.1rem, 1.4rem + 3vw, 4rem); }
+h3 { font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem); }
+p { text-wrap: pretty; }
+
+/* Огненная заливка ключевых слов заголовка */
+.flame {
+  background: linear-gradient(100deg, var(--amber) 0%, var(--char-yolk) 40%, var(--ember) 90%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: flameShift 7s linear infinite;
+}
+@keyframes flameShift { to { background-position: 200% center; } }
+
+/* Рукописный акцент — «свежак», «наш соус» и т.п. */
+.hand {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  text-transform: none;
+  color: var(--amber);
+  letter-spacing: 0;
+}
+
+/* Надстрочная метка */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+.eyebrow::before {
+  content: '';
+  width: 1.8rem;
+  height: 2px;
+  background: var(--ember);
+}
+
+.lead {
+  font-family: var(--font-body);
+  font-size: clamp(1.08rem, 1rem + 0.5vw, 1.35rem);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+.muted { color: var(--ink-mute); }
+.hl { color: var(--amber); font-weight: 600; }
+
+/* -------- Раскладка -------- */
+.container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  position: relative;
+  z-index: 1;
+}
+.container-narrow { max-width: 880px; }
+
+.section {
+  position: relative;
+  padding-block: var(--section-y);
+  z-index: 1;
+}
+.section--tight { padding-block: clamp(3rem, 6vw, 5rem); }
+
+/* Тёмная панель-подложка: контент читается поверх крутящегося бургера */
+.panel {
+  position: relative;
+  background: linear-gradient(180deg, rgba(13, 11, 9, 0.86), rgba(13, 11, 9, 0.96));
+  border-block: 1px solid var(--line-soft);
+}
+.panel--solid { background: var(--char); }
+
+.divider { height: 1px; background: var(--line); border: 0; margin: 0; }
+
+/* Индекс раздела */
+.index-num {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ember);
+}
+.section-head { max-width: var(--maxw-text); margin-bottom: clamp(2rem, 4vw, 3.25rem); }
+.section-head .index-num { display: block; margin-bottom: 0.9rem; }
+.section-head .lead { margin-top: 1.1rem; }
+
+/* -------- Кнопки -------- */
+.btn {
+  --btn-bg: var(--amber);
+  --btn-fg: #1a1206;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.95em 1.7em;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: 2px solid var(--btn-bg);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform var(--dur) var(--ease-back), box-shadow var(--dur) var(--ease),
+    background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  will-change: transform;
+}
+.btn:hover { transform: translateY(-2px) rotate(-1deg); box-shadow: 0 14px 30px -14px rgba(255, 180, 0, 0.7); }
+.btn:active { transform: translateY(0) rotate(0); }
+.btn:focus-visible { outline: 3px solid var(--ember); outline-offset: 3px; }
+.btn .arrow { transition: transform var(--dur) var(--ease); }
+.btn:hover .arrow { transform: translateX(4px); }
+
+.btn--ember { --btn-bg: var(--ember); --btn-fg: #fff; }
+.btn--ember:hover { box-shadow: 0 14px 30px -14px rgba(232, 64, 31, 0.75); }
+
+.btn--ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--cream);
+  border-color: var(--line);
+}
+.btn--ghost:hover { border-color: var(--amber); color: var(--amber); box-shadow: none; }
+
+/* Текстовая ссылка со стрелкой */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cream);
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 3px;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.link-arrow:hover { border-color: var(--amber); color: var(--amber); }
+.link-arrow .arrow { transition: transform var(--dur) var(--ease); }
+.link-arrow:hover .arrow { transform: translateX(4px); }
+
+/* -------- Штамп-бейдж (как рукописные кружки у конкурентов) -------- */
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #1a1206;
+  background: var(--amber);
+  padding: 0.5em 0.9em;
+  border-radius: 40% 60% 55% 45% / 55% 45% 55% 45%;
+  transform: rotate(-7deg);
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.6);
+}
+.stamp--ember { background: var(--ember); color: #fff; }
+.stamp--outline {
+  background: transparent;
+  color: var(--amber);
+  border: 2px dashed var(--amber);
+}
+
+/* Метка позиции меню (хит/остро/новинка/веган) */
+.tag {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.28em 0.7em;
+  border-radius: 999px;
+  background: var(--amber);
+  color: #1a1206;
+}
+.tag--остро, .tag--ostro { background: var(--ember); color: #fff; }
+.tag--новинка, .tag--novinka { background: transparent; color: var(--amber); border: 1.5px solid var(--amber); }
+.tag--веган, .tag--vegan { background: #4c8f2f; color: #fff; }
+
+/* -------- Утилиты доступности -------- */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+.skip-link {
+  position: absolute;
+  left: -9999px; top: 0;
+  z-index: 200;
+  background: var(--amber);
+  color: #1a1206;
+  padding: 0.9em 1.4em;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+.skip-link:focus { left: 1rem; top: 1rem; }
+
+a:focus-visible, button:focus-visible, input:focus-visible,
+textarea:focus-visible, select:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 2px;
+}
+
+/* -------- Появление при скролле -------- */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.75s var(--ease), transform 0.75s var(--ease);
+  will-change: opacity, transform;
+}
+.js .reveal.is-visible { opacity: 1; transform: none; }
+.js .reveal[style*="--i"] { transition-delay: calc(var(--i) * 0.07s); }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; }
+}
+
+/* -------- Списки-«штрихи» -------- */
+.list-clean { list-style: none; padding: 0; display: grid; gap: 1rem; }
+.list-clean li { position: relative; padding-left: 1.8rem; color: var(--ink-soft); }
+.list-clean li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0.6em;
+  width: 0.85rem; height: 3px;
+  background: var(--ember);
+  border-radius: 2px;
+}
+
+/* -------- Общие блоки внутренних страниц -------- */
+.page-hero {
+  position: relative;
+  padding-top: clamp(8rem, 14vw, 11rem);
+  padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+}
+.page-hero h1 { margin: 1rem 0; max-width: 16ch; }
+.page-hero__lead { max-width: 56ch; }
+
+.prose { max-width: var(--maxw-text); }
+.prose > * + * { margin-top: 1.35rem; }
+.prose h2 { margin-top: 2.75rem; margin-bottom: 0.6rem; }
+.prose h3 { margin-top: 2rem; margin-bottom: 0.5rem; }
+.prose p, .prose li { color: var(--ink-soft); }
+.prose ul, .prose ol { padding-left: 1.3rem; display: grid; gap: 0.7rem; }
+.prose blockquote {
+  margin: 2rem 0;
+  padding: 1.25rem 1.75rem;
+  border-left: 4px solid var(--ember);
+  background: var(--char-3);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-family: var(--font-hand);
+  font-size: 1.7rem;
+  line-height: 1.3;
+  color: var(--cream);
+}
+
+/* Ссылка «назад» */
+.back-link {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-display); font-weight: 600; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--ink-soft);
+  transition: color 0.3s var(--ease);
+}
+.back-link:hover { color: var(--amber); }
+
+/* -------- Зум фото при наведении -------- */
+.zoomable { overflow: hidden; }
+.zoomable img { transition: transform 0.9s var(--ease); }
+.zoomable:hover img { transform: scale(1.06); }
+
+@media (max-width: 900px) {
+  .section-head { max-width: 100%; }
+}

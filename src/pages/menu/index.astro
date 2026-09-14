@@ -1,0 +1,204 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PhotoSlot from '../../components/PhotoSlot.astro';
+import { MENU } from '../../data/menu.mjs';
+import { CONTACTS, BUSINESS } from '../../config/site.mjs';
+import { restaurantSchema } from '../../config/schema.mjs';
+
+const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
+
+// Фото-слот к каждой категории (что снять для «шапки» раздела).
+const catPhoto = {
+  burgers: 'Три-четыре бургера рядом на доске, разные, вид сверху под углом. Горизонтально.',
+  sides: 'Картошка фри, кольца и стрипсы в корзинках, флэтлей на тёмном.',
+  sauces: 'Ряд из шести чашек с разными соусами, вид сверху.',
+  drinks: 'Лимонады и коктейль в стекле в ряд, запотевшие, боковой свет.',
+};
+---
+
+<BaseLayout seoKey="menu" jsonLd={jsonLd}>
+  <!-- Шапка -->
+  <section class="page-hero panel">
+    <div class="container">
+      <span class="eyebrow">Меню</span>
+      <h1>Всё, что мы<br /><span class="flame">жарим и наливаем</span></h1>
+      <p class="lead page-hero__lead">
+        Состав, вес и цена — без мелкого шрифта и звёздочек. Первый соус к бургеру всегда бесплатно.
+      </p>
+
+      <!-- Быстрые якоря по категориям -->
+      <nav class="cat-nav" aria-label="Разделы меню">
+        {MENU.map((c) => <a href={`#${c.id}`}>{c.title}</a>)}
+      </nav>
+    </div>
+  </section>
+
+  <!-- Категории -->
+  {MENU.map((cat, ci) => (
+    <section class="section panel menu-cat" id={cat.id} aria-labelledby={`${cat.id}-title`}>
+      <div class="container">
+        <div class="menu-cat__head reveal">
+          <div>
+            <span class="index-num">{String(ci + 1).padStart(2, '0')} · {cat.kicker}</span>
+            <h2 id={`${cat.id}-title`}>{cat.title}</h2>
+          </div>
+          <p class="muted menu-cat__note">{cat.note}</p>
+        </div>
+
+        <div class="menu-cat__grid">
+          <div class="menu-cat__photo reveal">
+            <PhotoSlot label={cat.title} note={catPhoto[cat.id]} ratio="4/5" sizes="(max-width: 940px) 90vw, 34vw" />
+          </div>
+
+          <ul class="price-list reveal">
+            {cat.items.map((it) => (
+              <li class="price-row">
+                <div class="price-row__main">
+                  <span class="price-row__name">
+                    {it.name}
+                    {it.tag && <span class={`tag tag--${it.tag}`}>{it.tag}</span>}
+                  </span>
+                  <span class="price-row__desc muted">{it.desc}</span>
+                  <span class="price-row__slot">📸 фото: {it.photo}</span>
+                </div>
+                <div class="price-row__meta">
+                  <span class="price-row__weight">{it.weight}</span>
+                  <span class="price-row__price">{it.price} ₽</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <!-- Заказ -->
+  <section class="section panel--solid order" id="zakaz" aria-labelledby="order-title">
+    <div class="container">
+      <div class="section-head reveal" style="text-align:center;margin-inline:auto;">
+        <span class="stamp">как заказать</span>
+        <h2 id="order-title" style="margin-top:1.25rem;">Три способа <span class="flame">поесть</span></h2>
+      </div>
+
+      <div class="order__grid">
+        <div class="order__card reveal" style="--i:0">
+          <span class="order__ico" aria-hidden="true">🏃</span>
+          <h3>Навынос</h3>
+          <p class="muted">Позвоните, назовите заказ — соберём к вашему приходу, чтобы не ждать у кассы.</p>
+          {CONTACTS.phoneDisplay && <a class="btn btn--ghost order__btn" href={`tel:${CONTACTS.phoneRaw}`}>{CONTACTS.phoneDisplay}</a>}
+        </div>
+        <div class="order__card order__card--hl reveal" style="--i:1">
+          <span class="order__ico" aria-hidden="true">🛵</span>
+          <h3>Доставка</h3>
+          <p class="muted">Привезём домой или в офис. Пишите в мессенджер — подтвердим состав и время.</p>
+          <div class="order__links">
+            {CONTACTS.telegram && <a class="btn order__btn" href={CONTACTS.telegram} target="_blank" rel="noopener">Telegram</a>}
+            {CONTACTS.whatsapp && <a class="btn btn--ghost order__btn" href={CONTACTS.whatsapp} target="_blank" rel="noopener">WhatsApp</a>}
+          </div>
+        </div>
+        <div class="order__card reveal" style="--i:2">
+          <span class="order__ico" aria-hidden="true">🍽️</span>
+          <h3>У нас в зале</h3>
+          <p class="muted">Приходите без брони. Много гостей — забронируйте стол заранее по телефону.</p>
+          <a class="btn btn--ghost order__btn" href="/kontakty/">Адрес и часы</a>
+        </div>
+      </div>
+
+      <p class="order__hours muted reveal">
+        Работаем: {BUSINESS.openingHoursDisplay.map((h) => `${h.label} ${h.value}`).join(' · ')}
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .cat-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 2rem;
+  }
+  .cat-nav a {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.5em 1.1em;
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    color: var(--cream);
+    transition: border-color 0.3s var(--ease), color 0.3s var(--ease), background 0.3s var(--ease);
+  }
+  .cat-nav a:hover { border-color: var(--amber); color: #1a1206; background: var(--amber); }
+
+  .menu-cat__head {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 3rem;
+    align-items: end;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  .menu-cat__head .index-num { display: block; margin-bottom: 0.7rem; }
+  .menu-cat__note { max-width: 46ch; }
+
+  .menu-cat__grid { display: grid; grid-template-columns: 0.7fr 1.3fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+  .menu-cat__photo { position: sticky; top: 100px; }
+
+  .price-list { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 2rem;
+    padding: 1.4rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .price-row__main { display: grid; gap: 0.35rem; max-width: 52ch; }
+  .price-row__name {
+    display: inline-flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+    font-family: var(--font-display); font-weight: 600; font-size: 1.4rem; text-transform: uppercase; color: var(--cream);
+  }
+  .price-row__desc { font-size: 0.95rem; }
+  .price-row__slot {
+    font-size: 0.76rem;
+    color: var(--amber);
+    opacity: 0.75;
+    font-style: italic;
+  }
+  .price-row__meta { display: flex; align-items: baseline; gap: 1.25rem; white-space: nowrap; }
+  .price-row__weight { font-size: 0.85rem; color: var(--ink-mute); }
+  .price-row__price { font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; color: var(--amber); }
+
+  /* Заказ */
+  .order__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.25rem, 2.5vw, 2rem); }
+  .order__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: clamp(1.75rem, 3vw, 2.5rem);
+    background: var(--char-3);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    text-align: center;
+    align-items: center;
+  }
+  .order__card--hl { border-color: rgba(255,180,0,0.45); background: var(--char-4); }
+  .order__ico { font-size: 2.4rem; }
+  .order__btn { margin-top: 0.75rem; }
+  .order__links { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; margin-top: 0.75rem; }
+  .order__links .order__btn { margin-top: 0; }
+  .order__hours { text-align: center; margin-top: 2.5rem; font-size: 0.92rem; }
+
+  @media (max-width: 940px) {
+    .menu-cat__head { grid-template-columns: 1fr; align-items: start; }
+    .menu-cat__grid { grid-template-columns: 1fr; }
+    .menu-cat__photo { position: static; max-width: 420px; }
+    .order__grid { grid-template-columns: 1fr; max-width: 460px; margin-inline: auto; }
+  }
+  @media (max-width: 560px) {
+    .price-row { flex-direction: column; gap: 0.5rem; }
+    .price-row__meta { gap: 1rem; }
+  }
+</style>

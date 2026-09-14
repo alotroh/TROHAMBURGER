@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Страница не найдена — TROHAMBURGER" description="Такой страницы нет." noindex={true} showStickyCta={false}>
+  <section class="section notfound">
+    <div class="container">
+      <span class="stamp stamp--ember">упс</span>
+      <h1 class="notfound__title">Эту булку<br /><span class="flame">кто-то съел</span></h1>
+      <p class="lead notfound__lead">
+        Страница потерялась где-то между грилем и кассой. Бывает. Давайте вернёмся туда, где точно есть еда.
+      </p>
+      <div class="notfound__actions">
+        <a class="btn" href="/">На главную <span class="arrow">→</span></a>
+        <a class="link-arrow" href="/menu/">Открыть меню <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound { padding-top: clamp(9rem, 16vw, 13rem); text-align: center; }
+  .notfound .stamp { margin-bottom: 1.5rem; }
+  .notfound__title { margin: 0 auto 1.5rem; }
+  .notfound__lead { max-width: 46ch; margin: 0 auto 2.5rem; }
+  .notfound__actions { display: flex; gap: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap; }
+</style>

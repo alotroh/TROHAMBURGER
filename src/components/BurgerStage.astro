@@ -1,0 +1,184 @@
+---
+/**
+ * BURGER STAGE — крутящийся бургер как фон всего сайта.
+ * ------------------------------------------------------------------
+ * Фиксированный слой позади контента: чёрный фон + большой бургер по центру
+ * + тёплое свечение. При прокрутке вниз бургер медленно поворачивается и
+ * приближается (zoom), при прокрутке вверх — всё разворачивается обратно,
+ * потому что трансформация привязана к абсолютному scrollY.
+ *
+ * Слой «veil» затемняется по мере прокрутки, чтобы текст ниже читался, а
+ * бургер продолжал крутиться приглушённо на фоне.
+ *
+ * Управляется одним rAF-обработчиком скролла. Уважает prefers-reduced-motion.
+ */
+import { Image } from 'astro:assets';
+import burger from '../assets/media/burger-hero.png';
+---
+
+<div class="stage" aria-hidden="true">
+  <div class="stage__glow"></div>
+  <div class="stage__orbit" data-burger-orbit>
+    <Image
+      src={burger}
+      alt=""
+      widths={[520, 760, 1040, 1320]}
+      sizes="(max-width: 720px) 92vw, 760px"
+      loading="eager"
+      fetchpriority="high"
+      class="stage__img"
+    />
+  </div>
+  <div class="stage__veil" data-burger-veil></div>
+  <!-- Поднимающийся «пар» над бургером -->
+  <div class="stage__steam" aria-hidden="true">
+    <span></span><span></span><span></span>
+  </div>
+</div>
+
+<style>
+  .stage {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(120% 90% at 50% 42%, #17120c 0%, #0a0806 55%, #050403 100%);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Тёплое свечение под бургером — «жар от гриля» */
+  .stage__glow {
+    position: absolute;
+    left: 50%;
+    top: 44%;
+    width: min(90vmin, 900px);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    background:
+      radial-gradient(circle, rgba(255, 158, 0, 0.24) 0%, rgba(232, 64, 31, 0.12) 34%, rgba(255, 158, 0, 0) 66%);
+    filter: blur(8px);
+    animation: glowPulse 5.5s ease-in-out infinite alternate;
+  }
+
+  .stage__orbit {
+    position: absolute;
+    left: 50%;
+    top: 44%;
+    transform: translate(-50%, -50%);
+    will-change: transform;
+  }
+  /* Обёртка получает трансформацию скролла (JS), а картинка — лёгкое «дыхание».
+     Так не конфликтуют CSS-анимация и JS-трансформация. */
+  .stage__img {
+    display: block;
+    width: min(88vmin, 760px);
+    height: auto;
+    /* PNG бургера на чёрном фоне → screen убирает чёрный, а радиальная маска
+       мягко растворяет прямоугольные края в тёмной сцене. Вместе — бесшовно. */
+    mix-blend-mode: screen;
+    -webkit-mask-image: radial-gradient(60% 64% at 50% 47%, #000 52%, rgba(0,0,0,0) 82%);
+    mask-image: radial-gradient(60% 64% at 50% 47%, #000 52%, rgba(0,0,0,0) 82%);
+    animation: burgerBob 6s ease-in-out infinite;
+    transform-origin: center 46%;
+  }
+
+  .stage__veil {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(8, 6, 4, 0) 0%, rgba(8, 6, 4, 0.55) 70%, rgba(8, 6, 4, 0.8) 100%);
+    opacity: 0;
+    will-change: opacity;
+    transition: opacity 0.2s linear;
+  }
+
+  /* Пар */
+  .stage__steam {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    width: 160px;
+    height: 220px;
+    transform: translateX(-50%);
+    opacity: 0.5;
+  }
+  .stage__steam span {
+    position: absolute;
+    bottom: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(246, 239, 225, 0.5), rgba(246, 239, 225, 0));
+    filter: blur(4px);
+    animation: steamRise 6s ease-in infinite;
+  }
+  .stage__steam span:nth-child(1) { left: 30%; animation-delay: 0s; }
+  .stage__steam span:nth-child(2) { left: 50%; animation-delay: 2s; }
+  .stage__steam span:nth-child(3) { left: 68%; animation-delay: 4s; }
+
+  @keyframes burgerBob {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(0.6deg); }
+  }
+  @keyframes glowPulse {
+    0% { opacity: 0.75; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+  }
+  @keyframes steamRise {
+    0% { transform: translateY(0) scale(0.7); opacity: 0; }
+    20% { opacity: 0.6; }
+    100% { transform: translateY(-180px) scale(1.6); opacity: 0; }
+  }
+
+  @media (max-width: 720px) {
+    .stage__steam { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stage__img,
+    .stage__glow,
+    .stage__steam span { animation: none; }
+  }
+</style>
+
+<script>
+  // Прокрутка → поворот + приближение бургера.
+  const orbit = document.querySelector<HTMLElement>('[data-burger-orbit]');
+  const veil = document.querySelector<HTMLElement>('[data-burger-veil]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (orbit && !reduce) {
+    let ticking = false;
+
+    const apply = () => {
+      const y = window.scrollY;
+
+      // Поворот растёт со скроллом (вниз — по часовой, вверх — обратно).
+      const rot = y * 0.05;
+      // Плавное приближение: разгоняется на первых ~3000px, дальше почти стоит.
+      const scale = 1 + Math.min(y, 3000) / 3000 * 1.35;
+      // Лёгкий подъём вверх при прокрутке вниз.
+      const lift = -Math.min(y, 4000) * 0.03;
+
+      orbit.style.transform =
+        `translate(-50%, calc(-50% + ${lift}px)) rotate(${rot}deg) scale(${scale})`;
+
+      if (veil) {
+        // Затемняем фон по мере ухода от первого экрана.
+        veil.style.opacity = String(Math.min(y / 650, 1) * 0.6);
+      }
+
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(apply);
+        ticking = true;
+      }
+    };
+
+    apply();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+  }
+</script>

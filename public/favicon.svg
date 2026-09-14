@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#0d0b09"/>
+  <!-- верхняя булка -->
+  <path d="M14 26c0-9 8-15 18-15s18 6 18 15z" fill="#ffb400"/>
+  <circle cx="26" cy="20" r="1.4" fill="#0d0b09" opacity="0.5"/>
+  <circle cx="34" cy="17" r="1.4" fill="#0d0b09" opacity="0.5"/>
+  <circle cx="40" cy="21" r="1.4" fill="#0d0b09" opacity="0.5"/>
+  <!-- салат -->
+  <path d="M13 29c3-2 5 1 8-1s5 1 8-1 5 1 8-1 5 1 8-1 4 1 6 0v3H13z" fill="#4c8f2f"/>
+  <!-- котлета -->
+  <rect x="13" y="33" width="38" height="7" rx="3.5" fill="#6b3d24"/>
+  <!-- сыр -->
+  <path d="M15 40h34l-5 4H20z" fill="#ff9e00"/>
+  <!-- нижняя булка -->
+  <path d="M14 45h36c0 5-6 8-18 8s-18-3-18-8z" fill="#e8a13c"/>
+</svg>

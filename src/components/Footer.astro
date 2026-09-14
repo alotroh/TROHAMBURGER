@@ -1,0 +1,127 @@
+---
+/**
+ * Подвал: бренд, навигация, контакты, часы. Данные — из site.mjs.
+ */
+import { SITE, NAV, CONTACTS, BUSINESS } from '../config/site.mjs';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer panel--solid">
+  <div class="container site-footer__inner">
+    <div class="site-footer__brand">
+      <a href="/" class="site-footer__logo">🍔 {SITE.brand}</a>
+      <p class="muted site-footer__pitch">
+        Смэш-бургеры, картошка двойной обжарки и соусы своей варки.
+        Жарим под заказ — быстрее, чем вы выберете напиток.
+      </p>
+      <p class="site-footer__concept">Концепт-проект для портфолио. Адрес и телефон — заглушки.</p>
+    </div>
+
+    <nav class="site-footer__nav" aria-label="Навигация в подвале">
+      <span class="site-footer__col-title">Меню сайта</span>
+      <ul>
+        <li><a href="/">Главная</a></li>
+        {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="site-footer__col">
+      <span class="site-footer__col-title">Часы</span>
+      <ul class="site-footer__hours">
+        {BUSINESS.openingHoursDisplay.map((h) => (
+          <li><span>{h.label}</span><span>{h.value}</span></li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="site-footer__col">
+      <span class="site-footer__col-title">Связь</span>
+      <ul class="site-footer__contacts">
+        {CONTACTS.phoneDisplay && <li><a href={`tel:${CONTACTS.phoneRaw}`}>{CONTACTS.phoneDisplay}</a></li>}
+        {CONTACTS.telegram && <li><a href={CONTACTS.telegram} target="_blank" rel="noopener">Telegram</a></li>}
+        {CONTACTS.whatsapp && <li><a href={CONTACTS.whatsapp} target="_blank" rel="noopener">WhatsApp</a></li>}
+        {CONTACTS.instagram && <li><a href={CONTACTS.instagram} target="_blank" rel="noopener">Instagram</a></li>}
+        {CONTACTS.email && <li><a href={`mailto:${CONTACTS.email}`}>{CONTACTS.email}</a></li>}
+      </ul>
+    </div>
+  </div>
+
+  <div class="container site-footer__bottom">
+    <span>© {year} {SITE.brand}</span>
+    <span class="muted">Сделано с огоньком 🔥</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding-top: clamp(3rem, 6vw, 5rem);
+    padding-bottom: 2rem;
+  }
+  .site-footer__inner {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr;
+    gap: clamp(2rem, 4vw, 3.5rem);
+  }
+  .site-footer__logo {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--cream);
+  }
+  .site-footer__pitch { margin-top: 1rem; max-width: 42ch; font-size: 0.95rem; }
+  .site-footer__concept {
+    margin-top: 1rem;
+    font-size: 0.78rem;
+    color: var(--amber);
+    opacity: 0.8;
+  }
+  .site-footer__col-title {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 1.1rem;
+  }
+  .site-footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.65rem; }
+  .site-footer__nav a,
+  .site-footer__contacts a {
+    color: var(--ink-soft);
+    transition: color 0.3s var(--ease);
+  }
+  .site-footer__nav a:hover,
+  .site-footer__contacts a:hover { color: var(--amber); }
+  .site-footer__hours li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+  }
+  .site-footer__hours span:last-child { color: var(--cream); white-space: nowrap; }
+
+  .site-footer__bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line-soft);
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+  }
+
+  @media (max-width: 860px) {
+    .site-footer__inner { grid-template-columns: 1fr 1fr; }
+    .site-footer__brand { grid-column: 1 / -1; }
+  }
+  @media (max-width: 520px) {
+    .site-footer__inner { grid-template-columns: 1fr; }
+    .site-footer__bottom { flex-direction: column; gap: 0.4rem; }
+  }
+</style>

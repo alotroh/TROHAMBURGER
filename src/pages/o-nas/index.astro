@@ -1,0 +1,122 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PhotoSlot from '../../components/PhotoSlot.astro';
+import { SITE } from '../../config/site.mjs';
+import { restaurantSchema } from '../../config/schema.mjs';
+
+const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
+
+const principles = [
+  { t: 'Мало позиций', d: 'Восемь бургеров вместо сорока. Меньше выбор — выше качество каждого. И вы не залипаете над меню полчаса.' },
+  { t: 'Ничего замороженного', d: 'Котлеты, картошка, булки — всё свежее, каждый день. То, что не успели продать, не «дорабатываем» на завтра.' },
+  { t: 'Открытая кухня', d: 'Гриль на виду. Видно, как жмут вашу котлету, — прятать нам нечего.' },
+  { t: 'Честная цена', d: 'Не самые дешёвые в городе, но за эти деньги вы точно понимаете, за что платите.' },
+];
+---
+
+<BaseLayout seoKey="about" jsonLd={jsonLd}>
+  <section class="page-hero panel">
+    <div class="container">
+      <span class="eyebrow">О нас</span>
+      <h1>Начиналось с одного<br /><span class="flame">гриля на фудкорте</span></h1>
+      <p class="lead page-hero__lead">
+        {SITE.brand} — это не сеть и не франшиза. Это место, куда мы сами ходили бы обедать. Собственно, поэтому и открыли.
+      </p>
+    </div>
+  </section>
+
+  <!-- История + фото -->
+  <section class="section panel">
+    <div class="container story">
+      <div class="story__text prose reveal">
+        <p>
+          В 2019-м у нас была одна сковорода, арендованный угол на фудкорте и упрямая идея: бургер можно
+          делать нормально, даже когда его берут на бегу. Первое время жарили сами, считали каждую котлету
+          и радовались, когда очередь доходила до пяти человек.
+        </p>
+        <p>
+          Люди возвращались. Сначала за «тем самым с беконом», потом просто «как обычно, вы поняли».
+          Через год мы переросли угол и переехали в отдельное помещение с настоящей кухней и залом,
+          где можно спокойно сесть и никуда не спешить.
+        </p>
+        <blockquote>Мы не изобрели бургер. Мы просто отказались его портить.</blockquote>
+        <p>
+          С тех пор мало что поменялось в подходе. Мясо по-прежнему рубим сами, соусы варим на кухне,
+          а котлету жмём вручную. Добавилось только меню, пара поваров и та самая пятничная позиция,
+          которой нет в прайсе — спрашивайте у кассы.
+        </p>
+      </div>
+      <div class="story__media reveal">
+        <PhotoSlot label="Тогда и сейчас" note="Архивное фото первой точки / первой сковороды, либо основатель у гриля. Вертикально." ratio="3/4" sizes="(max-width: 940px) 90vw, 40vw" priority={true} />
+        <span class="story__badge stamp stamp--ember">с {SITE.since}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Принципы -->
+  <section class="section panel">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="index-num">Во что мы верим</span>
+        <h2>Четыре правила,<br /><span class="flame">которые не меняем</span></h2>
+      </div>
+      <div class="principles">
+        {principles.map((p, i) => (
+          <div class="principle reveal" style={`--i:${i}`}>
+            <span class="principle__num">0{i + 1}</span>
+            <h3>{p.t}</h3>
+            <p class="muted">{p.d}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Кухня — галерея -->
+  <section class="section panel">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="index-num">Кухня без фильтров</span>
+        <h2>Загляните <span class="flame">за прилавок</span></h2>
+        <p class="muted">Слоты под реальные фото кухни. В подписи — что снять.</p>
+      </div>
+      <div class="kitchen-grid">
+        <div class="reveal" style="--i:0"><PhotoSlot label="Гриль" note="Котлеты на раскалённом чугуне, момент прожарки, огонь снизу." ratio="1/1" sizes="(max-width:720px) 92vw, 30vw" /></div>
+        <div class="reveal" style="--i:1"><PhotoSlot label="Сборка" note="Руки повара собирают бургер: булка, соус, котлета. Крупно." ratio="1/1" sizes="(max-width:720px) 92vw, 30vw" /></div>
+        <div class="reveal" style="--i:2"><PhotoSlot label="Соусная" note="Повар наливает соус из кастрюли в чашки, процесс варки." ratio="1/1" sizes="(max-width:720px) 92vw, 30vw" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section panel--solid" style="text-align:center;">
+    <div class="container">
+      <h2 class="reveal">Проголодались, пока читали?</h2>
+      <p class="lead reveal" style="max-width:44ch;margin:1rem auto 2rem;">Так это нормально. Идёмте есть.</p>
+      <div class="reveal" style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;align-items:center;">
+        <a class="btn btn--ember" href="/menu/#zakaz">Смотреть меню <span class="arrow">→</span></a>
+        <a class="link-arrow" href="/kontakty/">Как добраться</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .story { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: start; }
+  .story__media { position: relative; position: sticky; top: 100px; }
+  .story__badge { position: absolute; top: -1rem; left: -1rem; font-size: 1.2rem; }
+
+  .principles { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(1.5rem, 3vw, 2.5rem); }
+  .principle { padding-top: 1.25rem; border-top: 2px solid var(--ember); }
+  .principle__num { font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; color: var(--amber); }
+  .principle h3 { margin: 0.5rem 0 0.6rem; }
+
+  .kitchen-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2vw, 1.5rem); }
+
+  @media (max-width: 940px) {
+    .story { grid-template-columns: 1fr; }
+    .story__media { position: static; max-width: 440px; }
+    .principles { grid-template-columns: 1fr; }
+    .kitchen-grid { grid-template-columns: 1fr; max-width: 420px; margin-inline: auto; }
+  }
+</style>

@@ -1,0 +1,456 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PhotoSlot from '../components/PhotoSlot.astro';
+import { BURGERS, FACTS } from '../data/menu.mjs';
+import { websiteSchema, restaurantSchema } from '../config/schema.mjs';
+
+const jsonLd = [websiteSchema(), restaurantSchema({ image: '/og-cover.svg' })];
+
+// Бегущая строка
+const marquee = ['Сочно', 'Жарим на огне', 'Двойной смэш', 'Булка на закваске', 'Соус своей варки', 'Мясо рубим сами'];
+
+// Как готовим
+const steps = [
+  { n: '01', t: 'Рубим мясо', d: 'Берём говяжью лопатку и грудинку, крутим на крупной решётке прямо на кухне. Никакого фарша из пакета.' },
+  { n: '02', t: 'Жмём котлету', d: 'Кладём шар мяса на раскалённый чугун и придавливаем лопаткой. Так получается та самая хрустящая корочка по краю.' },
+  { n: '03', t: 'Плавим сыр', d: 'Чеддер ложится на котлету за минуту до готовности и накрывается крышкой. Пока он не потёк — бургер не собираем.' },
+  { n: '04', t: 'Собираем', d: 'Тёплая булка, соус, овощи, котлета. От гриля до вашего подноса — минута, чтобы ничего не остыло.' },
+];
+---
+
+<BaseLayout seoKey="home" transparentHeader={true} jsonLd={jsonLd}>
+  <!-- 01 · HERO — бургер крутится за текстом -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero__top">
+      <span class="eyebrow">Крафтовая бургерная · с 2019</span>
+      <span class="hero__scroll" aria-hidden="true">листай вниз<span class="hero__scroll-arrow">↓</span></span>
+    </div>
+
+    <!-- Рукописные штампы вокруг бургера -->
+    <span class="hero__stamp hero__stamp--1 stamp">свежак</span>
+    <span class="hero__stamp hero__stamp--2 stamp stamp--ember">двойной<br />смэш</span>
+
+    <div class="container hero__bottom">
+      <div class="hero__text">
+        <h1 id="hero-title" class="hero__title">
+          Смэшни.<br /><span class="flame">Зажарь.</span> Повтори.
+        </h1>
+        <p class="lead hero__lead">
+          Бургерная, где котлету жмут вручную на чугуне, а соус варят на кухне, а не открывают из бутылки.
+          <span class="hl">Жарим только под заказ.</span>
+        </p>
+        <div class="hero__actions">
+          <a class="btn" href="/menu/#zakaz" data-track="click_order">Заказать бургер <span class="arrow" aria-hidden="true">→</span></a>
+          <a class="link-arrow" href="/menu/">Всё меню</a>
+        </div>
+      </div>
+
+      <ul class="hero__facts">
+        {FACTS.map((f) => (
+          <li class="hero__fact">
+            <span class="hero__fact-num">{f.num}</span>
+            <span class="hero__fact-label">{f.label}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Бегущая строка -->
+  <div class="marquee panel" aria-hidden="true">
+    <div class="marquee__track">
+      {[...marquee, ...marquee].map((w) => (
+        <span class="marquee__item">{w}<span class="marquee__dot">🔥</span></span>
+      ))}
+    </div>
+  </div>
+
+  <!-- 02 · ПОДХОД -->
+  <section class="section panel approach" aria-labelledby="approach-title">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="index-num">01 · Почему сюда возвращаются</span>
+        <h2 id="approach-title">Не фастфуд.<br /><span class="flame">Просто честный бургер</span></h2>
+        <p class="lead">Мы делаем немного позиций, но каждую доводим до ума. Проще выбрать, вкуснее есть.</p>
+      </div>
+      <div class="approach__grid">
+        <div class="approach__item reveal" style="--i:0">
+          <span class="approach__ico" aria-hidden="true">🥩</span>
+          <h3>Мясо, а не «состав»</h3>
+          <p class="muted">Говядина, соль, перец. Всё. Рубим сами каждое утро, поэтому знаем, что в котлете.</p>
+        </div>
+        <div class="approach__item reveal" style="--i:1">
+          <span class="approach__ico" aria-hidden="true">🔥</span>
+          <h3>Живой огонь</h3>
+          <p class="muted">Чугунная поверхность и высокий жар. Та самая корочка получается только так, микроволновка не поможет.</p>
+        </div>
+        <div class="approach__item reveal" style="--i:2">
+          <span class="approach__ico" aria-hidden="true">🥫</span>
+          <h3>Соусы свои</h3>
+          <p class="muted">Шесть соусов варим на кухне. Рецепт «Трохи» не отдадим даже под пытками картошкой фри.</p>
+        </div>
+        <div class="approach__item reveal" style="--i:3">
+          <span class="approach__ico" aria-hidden="true">⏱️</span>
+          <h3>Под заказ</h3>
+          <p class="muted">Ничего не лежит под лампой. Заказали — тогда и пошли на гриль. Да, чуть дольше. Да, оно того стоит.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 · ВИТРИНА БУРГЕРОВ -->
+  <section class="section panel burgers" aria-labelledby="burgers-title" id="menu-preview">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="index-num">02 · Наши бургеры</span>
+        <h2 id="burgers-title">Выбирай <span class="flame">свой</span></h2>
+        <p class="muted">Фото на карточках — слоты под реальную съёмку. В подписи написано, что снять на каждое место.</p>
+      </div>
+
+      <div class="burger-grid">
+        {BURGERS.map((b, i) => (
+          <article class="bcard reveal" style={`--i:${i % 4}`}>
+            <div class="bcard__media">
+              <PhotoSlot label={b.name} note={b.photo} ratio="4/3" sizes="(max-width: 720px) 92vw, 30vw" />
+              {b.tag && <span class={`tag tag--${b.tag} bcard__tag`}>{b.tag}</span>}
+            </div>
+            <div class="bcard__body">
+              <div class="bcard__head">
+                <h3 class="bcard__name">{b.name}</h3>
+                <span class="bcard__price">{b.price} ₽</span>
+              </div>
+              <p class="bcard__desc muted">{b.desc}</p>
+              <span class="bcard__weight">{b.weight}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="burgers__cta reveal">
+        <a class="btn btn--ghost" href="/menu/">Всё меню и цены <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 · КАК ГОТОВИМ -->
+  <section class="section panel process" aria-labelledby="process-title">
+    <div class="container process__inner">
+      <div class="process__media reveal">
+        <PhotoSlot
+          label="Кухня в деле"
+          note="Повар жмёт котлету лопаткой на чугуне, летят капли жира, пар. Вертикальный кадр."
+          ratio="4/5"
+          sizes="(max-width: 940px) 90vw, 42vw"
+          priority={true}
+        />
+        <span class="process__badge stamp stamp--outline">без спешки,<br />но быстро</span>
+      </div>
+      <div class="process__text">
+        <div class="section-head reveal">
+          <span class="index-num">03 · Как готовим</span>
+          <h2 id="process-title">Четыре шага<br /><span class="flame">до вашего стола</span></h2>
+        </div>
+        <ol class="steps-list">
+          {steps.map((s, i) => (
+            <li class="step-row reveal" style={`--i:${i}`}>
+              <span class="step-row__num">{s.n}</span>
+              <div>
+                <h3 class="step-row__title">{s.t}</h3>
+                <p class="muted">{s.d}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 · АТМОСФЕРА (галерея слотов) -->
+  <section class="section panel gallery" aria-labelledby="gallery-title">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="index-num">04 · Как у нас</span>
+        <h2 id="gallery-title">Атмосфера <span class="flame">места</span></h2>
+        <p class="muted">Здесь пять слотов под фото. Замените на реальные снимки заведения — подпись подскажет, что снять.</p>
+      </div>
+      <div class="gallery__grid">
+        <div class="gallery__cell gallery__cell--tall reveal" style="--i:0">
+          <PhotoSlot label="Зал" note="Общий план зала: деревянные столы, тёплый свет, люди едят. Вертикально." ratio="4/5" sizes="(max-width:720px) 92vw, 32vw" />
+        </div>
+        <div class="gallery__cell reveal" style="--i:1">
+          <PhotoSlot label="Бургер крупно" note="Один бургер в разрезе на доске, крупный план начинки." ratio="1/1" sizes="(max-width:720px) 92vw, 24vw" />
+        </div>
+        <div class="gallery__cell reveal" style="--i:2">
+          <PhotoSlot label="Барная стойка" note="Стойка с кранами крафта и лимонадами, бариста наливает." ratio="1/1" sizes="(max-width:720px) 92vw, 24vw" />
+        </div>
+        <div class="gallery__cell gallery__cell--wide reveal" style="--i:3">
+          <PhotoSlot label="Команда у гриля" note="Повара за работой на открытой кухне, огонь, движение. Горизонтально." ratio="16/9" sizes="(max-width:720px) 92vw, 56vw" />
+        </div>
+        <div class="gallery__cell reveal" style="--i:4">
+          <PhotoSlot label="Картошка и соусы" note="Картошка фри и чашки с соусами сверху, флэтлей." ratio="4/5" sizes="(max-width:720px) 92vw, 24vw" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 · ОТЗЫВЫ -->
+  <section class="section panel reviews" aria-labelledby="reviews-title">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="index-num">05 · Что говорят</span>
+        <h2 id="reviews-title">Не мы, а <span class="flame">гости</span></h2>
+      </div>
+      <div class="reviews__grid">
+        <figure class="review reveal" style="--i:0">
+          <blockquote>Взял «Бэкон Смэш» на бегу, а сел и залип на двадцать минут. Бекон реально хрустит, не резиновый.</blockquote>
+          <figcaption>Артём, зашёл на обед</figcaption>
+        </figure>
+        <figure class="review reveal" style="--i:1">
+          <blockquote>Дочка веган, я нет — взяли «Зелёный» и «Троху Дабл». Впервые никто не остался голодным и обиженным.</blockquote>
+          <figcaption>Марина, с семьёй в субботу</figcaption>
+        </figure>
+        <figure class="review reveal" style="--i:2">
+          <blockquote>Ждал девять минут, как и обещали на кассе. За такой бургер готов ждать и двадцать, если честно.</blockquote>
+          <figcaption>Костя, постоянный гость</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 · ЗАКАЗ / CTA -->
+  <section class="section panel--solid cta-band" id="zakaz" aria-labelledby="cta-title">
+    <div class="container cta-band__inner">
+      <div class="reveal">
+        <span class="stamp">проголодались?</span>
+        <h2 id="cta-title" class="cta-band__title">Тогда <span class="flame">не тяните</span></h2>
+        <p class="lead cta-band__lead">
+          Заберите навынос или закажите домой — привезём горячим. Столик тоже можно занять заранее, по телефону.
+        </p>
+        <div class="cta-band__actions">
+          <a class="btn btn--ember" href="/menu/#zakaz">Открыть меню <span class="arrow" aria-hidden="true">→</span></a>
+          <a class="link-arrow" href="/kontakty/">Как добраться и доставка</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---------- HERO ---------- */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-top: clamp(6.5rem, 12vw, 9rem);
+    padding-bottom: clamp(2rem, 5vw, 3.5rem);
+    isolation: isolate;
+  }
+  /* Мягкая тень снизу, чтобы текст читался поверх бургера */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgba(8,6,4,0.35) 0%, rgba(8,6,4,0) 22%, rgba(8,6,4,0) 55%, rgba(8,6,4,0.72) 100%);
+    pointer-events: none;
+  }
+  .hero__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .hero__scroll {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream-soft);
+  }
+  .hero__scroll-arrow { display: inline-block; animation: bounceDown 1.8s ease-in-out infinite; }
+  @keyframes bounceDown { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
+
+  .hero__stamp {
+    position: absolute;
+    z-index: 2;
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    animation: stampFloat 5s ease-in-out infinite;
+  }
+  .hero__stamp--1 { top: 26%; left: 8%; }
+  .hero__stamp--2 { top: 34%; right: 9%; animation-delay: 1.5s; }
+  @keyframes stampFloat {
+    0%,100% { transform: rotate(-7deg) translateY(0); }
+    50% { transform: rotate(-4deg) translateY(-8px); }
+  }
+
+  .hero__bottom {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: end;
+  }
+  .hero__text { max-width: 34rem; }
+  .hero__title {
+    font-size: clamp(3rem, 1.6rem + 7vw, 7rem);
+    line-height: 0.92;
+    margin-bottom: 1.5rem;
+    animation: heroIn 0.9s var(--ease) 0.15s backwards;
+  }
+  .hero__lead {
+    max-width: 42ch;
+    animation: heroIn 0.9s var(--ease) 0.3s backwards;
+  }
+  .hero__actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    animation: heroIn 0.9s var(--ease) 0.45s backwards;
+  }
+  @keyframes heroIn { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+
+  .hero__facts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem 1.5rem;
+    animation: heroIn 0.9s var(--ease) 0.6s backwards;
+  }
+  .hero__fact { display: grid; gap: 0.15rem; padding-left: 0.9rem; border-left: 3px solid var(--ember); }
+  .hero__fact-num { font-family: var(--font-display); font-weight: 700; font-size: 1.7rem; color: var(--amber); line-height: 1; }
+  .hero__fact-label { font-size: 0.82rem; color: var(--cream-soft); }
+
+  /* ---------- MARQUEE ---------- */
+  .marquee { overflow: hidden; padding-block: 1.1rem; border-block: 1px solid var(--line); }
+  .marquee__track { display: flex; width: max-content; animation: marqueeScroll 26s linear infinite; }
+  .marquee__item {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--cream);
+    white-space: nowrap;
+    padding-inline: 1.5rem;
+  }
+  .marquee__dot { margin-left: 1.5rem; font-size: 0.7em; }
+  @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .marquee:hover .marquee__track { animation-play-state: paused; }
+
+  /* ---------- ПОДХОД ---------- */
+  .approach__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1.25rem, 2.5vw, 2rem); }
+  .approach__item {
+    padding: clamp(1.5rem, 2.5vw, 2rem);
+    background: var(--char-3);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    transition: transform 0.4s var(--ease), border-color 0.4s var(--ease), background 0.4s var(--ease);
+  }
+  .approach__item:hover { transform: translateY(-6px); border-color: rgba(255,180,0,0.4); background: var(--char-4); }
+  .approach__ico { font-size: 2rem; display: block; margin-bottom: 1rem; }
+  .approach__item h3 { margin-bottom: 0.6rem; }
+
+  /* ---------- ВИТРИНА ---------- */
+  .burger-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1.25rem, 2vw, 1.75rem); }
+  .bcard {
+    display: flex;
+    flex-direction: column;
+    background: var(--char-3);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.4s var(--ease), border-color 0.4s var(--ease);
+  }
+  .bcard:hover { transform: translateY(-6px); border-color: rgba(255,180,0,0.4); }
+  .bcard__media { position: relative; }
+  .bcard__tag { position: absolute; top: 0.75rem; left: 0.75rem; z-index: 2; }
+  .bcard__body { padding: 1.1rem 1.2rem 1.3rem; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+  .bcard__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; }
+  .bcard__name { font-size: 1.3rem; }
+  .bcard__price { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--amber); white-space: nowrap; }
+  .bcard__desc { font-size: 0.9rem; line-height: 1.5; flex: 1; }
+  .bcard__weight { font-size: 0.78rem; color: var(--ink-mute); letter-spacing: 0.05em; }
+  .burgers__cta { margin-top: clamp(2rem, 4vw, 3rem); text-align: center; }
+
+  /* ---------- КАК ГОТОВИМ ---------- */
+  .process__inner { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: start; }
+  .process__media { position: relative; position: sticky; top: 100px; }
+  .process__badge { position: absolute; bottom: -1rem; right: -1rem; z-index: 2; font-size: 1.1rem; }
+  .steps-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+  .step-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.5rem;
+    padding: 1.6rem 0;
+    border-top: 1px solid var(--line);
+  }
+  .step-row:last-child { border-bottom: 1px solid var(--line); }
+  .step-row__num { font-family: var(--font-display); font-weight: 700; font-size: 2.4rem; line-height: 1; color: var(--ember); }
+  .step-row__title { margin-bottom: 0.4rem; }
+
+  /* ---------- ГАЛЕРЕЯ ---------- */
+  .gallery__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1rem, 2vw, 1.5rem); grid-auto-flow: dense; }
+  .gallery__cell--tall { grid-row: span 2; }
+  .gallery__cell--wide { grid-column: span 2; }
+
+  /* ---------- ОТЗЫВЫ ---------- */
+  .reviews__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.25rem, 2.5vw, 2rem); }
+  .review {
+    margin: 0;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    background: var(--char-3);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    position: relative;
+  }
+  .review::before {
+    content: '“';
+    position: absolute;
+    top: 0.2rem; left: 1.1rem;
+    font-family: var(--font-display);
+    font-size: 4rem;
+    color: var(--ember);
+    opacity: 0.4;
+    line-height: 1;
+  }
+  .review blockquote { margin: 1.5rem 0 1.25rem; font-size: 1.08rem; line-height: 1.5; color: var(--cream); }
+  .review figcaption { font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--amber); }
+
+  /* ---------- CTA BAND ---------- */
+  .cta-band { text-align: center; }
+  .cta-band__inner .stamp { margin-bottom: 1.5rem; }
+  .cta-band__title { margin-bottom: 1.25rem; }
+  .cta-band__lead { max-width: 50ch; margin: 0 auto 2.25rem; }
+  .cta-band__actions { display: flex; gap: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap; }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1040px) {
+    .approach__grid { grid-template-columns: repeat(2, 1fr); }
+    .burger-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 940px) {
+    .hero__bottom { grid-template-columns: 1fr; align-items: start; }
+    .hero__facts { max-width: 30rem; }
+    .process__inner { grid-template-columns: 1fr; }
+    .process__media { position: static; max-width: 480px; }
+    .gallery__grid { grid-template-columns: repeat(2, 1fr); }
+    .reviews__grid { grid-template-columns: 1fr; max-width: 560px; }
+  }
+  @media (max-width: 560px) {
+    .approach__grid, .burger-grid { grid-template-columns: 1fr; }
+    .hero__facts { grid-template-columns: 1fr 1fr; }
+    .hero__stamp--1 { top: 20%; left: 4%; }
+    .hero__stamp--2 { top: 30%; right: 4%; }
+    .gallery__cell--tall { grid-row: span 1; }
+    .gallery__cell--wide { grid-column: span 2; }
+  }
+</style>

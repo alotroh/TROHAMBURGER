@@ -1,0 +1,130 @@
+---
+/**
+ * БАЗОВЫЙ LAYOUT
+ * ------------------------------------------------------------------
+ * Собирает <head> (title, description, canonical, OG, JSON-LD), подключает
+ * шрифты, крутящийся бургер-фон, шапку, подвал и плавающую кнопку.
+ *
+ *   <BaseLayout seoKey="menu"> ... </BaseLayout>
+ */
+import '../styles/global.css';
+import { SEO } from '../config/seo.mjs';
+import { SITE, SITE_URL } from '../config/site.mjs';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import StickyCta from '../components/StickyCta.astro';
+import BurgerStage from '../components/BurgerStage.astro';
+
+interface Props {
+  seoKey?: keyof typeof SEO;
+  title?: string;
+  description?: string;
+  path?: string;
+  transparentHeader?: boolean;
+  showStickyCta?: boolean;
+  ogType?: string;
+  ogImage?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, any>[];
+}
+
+const {
+  seoKey,
+  transparentHeader = false,
+  showStickyCta = true,
+  ogType = 'website',
+  ogImage = '/og-cover.svg',
+  jsonLd = [],
+} = Astro.props;
+
+const meta = seoKey ? SEO[seoKey] : undefined;
+const title = Astro.props.title ?? meta?.title ?? SEO.home.title;
+const description = Astro.props.description ?? meta?.description ?? SEO.home.description;
+const path = Astro.props.path ?? meta?.path ?? '/';
+const noindex = Astro.props.noindex ?? false;
+
+const canonical = new URL(path, SITE_URL).href;
+const ogImageUrl = new URL(ogImage, SITE_URL).href;
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex
+      ? <meta name="robots" content="noindex, nofollow" />
+      : <meta name="robots" content="index, follow, max-image-preview:large" />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={SITE.brand} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <meta name="theme-color" content="#0d0b09" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Шрифты: Oswald (крупные заголовки), Caveat (рукописные штампы),
+         Manrope (текст). Все три с кириллицей. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Caveat:wght@700&family=Manrope:wght@400;500;600;700&display=swap"
+    />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    {jsonLd.map((node) => (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(node)} />
+    ))}
+  </head>
+
+  <body id="top">
+    <BurgerStage />
+    <a class="skip-link" href="#main">Перейти к содержимому</a>
+    <Header transparent={transparentHeader} currentPath={currentPath} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    {showStickyCta && <StickyCta />}
+
+    <script>
+      // Появление секций при прокрутке.
+      const items = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window && items.length) {
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                obs.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.1, rootMargin: '0px 0px -8% 0px' }
+        );
+        items.forEach((el) => io.observe(el));
+      } else {
+        items.forEach((el) => el.classList.add('is-visible'));
+      }
+    </script>
+  </body>
+</html>
