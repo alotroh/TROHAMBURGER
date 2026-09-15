@@ -78,14 +78,16 @@ const currentPath = Astro.url.pathname;
     <meta name="theme-color" content="#0d0b09" />
     <meta name="format-detection" content="telephone=no" />
 
-    <!-- Шрифты: Oswald (крупные заголовки), Caveat (рукописные штампы),
-         Manrope (текст). Все три с кириллицей. -->
+    <!-- Основные шрифты — локальные (Druk Wide Cyr + Uni Sans, см. global.css).
+         С Google подгружаем только Caveat (рукописные штампы) и Manrope (запас). -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Caveat:wght@700&family=Manrope:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Manrope:wght@400;500;600;700&display=swap"
     />
+    <!-- Предзагрузка локального заголовочного шрифта -->
+    <link rel="preload" href="/fonts/druk-wide-cyr-bold.otf" as="font" type="font/otf" crossorigin />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/favicon.svg" />

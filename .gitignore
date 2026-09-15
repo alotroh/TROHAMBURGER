@@ -15,3 +15,7 @@ Thumbs.db
 
 # logs
 npm-debug.log*
+
+# Шрифты держим локально — среди них платный Druk Wide (нельзя в публичный репо)
+/FONTS/
+/public/fonts/

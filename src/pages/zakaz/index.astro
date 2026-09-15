@@ -127,10 +127,10 @@ const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
   .oitem__thumb { width: 68px; height: 68px; border-radius: var(--radius-sm); overflow: hidden; flex: none; }
   .oitem__thumb img { width: 100%; height: 100%; object-fit: cover; }
   .oitem__info { display: grid; gap: 0.2rem; min-width: 0; }
-  .oitem__name { display: inline-flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; text-transform: uppercase; color: var(--cream); }
+  .oitem__name { display: inline-flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; text-transform: uppercase; color: var(--cream); }
   .oitem__desc { font-size: 0.82rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .oitem__right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
-  .oitem__price { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--amber); white-space: nowrap; }
+  .oitem__price { font-family: var(--font-body); font-weight: 700; font-size: 1.15rem; color: var(--amber); white-space: nowrap; }
 
   /* Степпер */
   .stepper { display: inline-flex; align-items: center; gap: 0.15rem; background: var(--char-2); border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem; }
@@ -138,13 +138,13 @@ const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
   .stepper__btn {
     width: 2rem; height: 2rem; display: grid; place-items: center;
     border: 0; border-radius: 50%; background: transparent; color: var(--cream);
-    font-family: var(--font-display); font-size: 1.4rem; line-height: 1; cursor: pointer;
+    font-family: var(--font-body); font-size: 1.4rem; line-height: 1; cursor: pointer;
     transition: background 0.2s var(--ease);
   }
   .oitem.in-order .stepper__btn { color: #1a1206; }
   .stepper__btn:hover { background: rgba(255,180,0,0.18); }
   .oitem.in-order .stepper__btn:hover { background: rgba(26,18,6,0.15); }
-  .stepper__q { min-width: 1.6rem; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+  .stepper__q { min-width: 1.6rem; text-align: center; font-family: var(--font-body); font-weight: 700; font-size: 1.1rem; }
   .oitem.in-order .stepper__q { color: #1a1206; }
 
   /* Калькулятор */
@@ -167,7 +167,7 @@ const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
   .sum-row:last-child { border-bottom: 0; }
   .sum-row__name { grid-column: 1; grid-row: 1; min-width: 0; font-size: 0.98rem; }
   .sum-row__name b { font-weight: 600; }
-  .sum-row__sum { grid-column: 2; grid-row: 1; text-align: right; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--amber); white-space: nowrap; }
+  .sum-row__sum { grid-column: 2; grid-row: 1; text-align: right; font-family: var(--font-body); font-weight: 700; font-size: 1.05rem; color: var(--amber); white-space: nowrap; }
   .sum-row__mini {
     grid-column: 1 / -1; grid-row: 2; justify-self: start;
     display: inline-flex; align-items: center;
@@ -176,12 +176,12 @@ const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
   .sum-row__mini button {
     width: 1.9rem; height: 1.9rem; display: grid; place-items: center;
     border: 0; background: transparent; color: var(--cream);
-    font-family: var(--font-display); font-size: 1.25rem; line-height: 1; cursor: pointer; border-radius: 50%;
+    font-family: var(--font-body); font-size: 1.25rem; line-height: 1; cursor: pointer; border-radius: 50%;
     transition: background 0.2s var(--ease), color 0.2s var(--ease);
   }
   .sum-row__mini button:hover { background: rgba(255,180,0,0.18); color: var(--amber); }
-  .sum-row__mini span { min-width: 1.7rem; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 1rem; }
-  .order-summary__total { display: flex; align-items: baseline; justify-content: space-between; padding-top: 0.9rem; border-top: 1px solid var(--line); font-family: var(--font-display); text-transform: uppercase; font-weight: 600; }
+  .sum-row__mini span { min-width: 1.7rem; text-align: center; font-family: var(--font-body); font-weight: 700; font-size: 1rem; }
+  .order-summary__total { display: flex; align-items: baseline; justify-content: space-between; padding-top: 0.9rem; border-top: 1px solid var(--line); font-family: var(--font-body); text-transform: uppercase; font-weight: 600; }
   .order-summary__sum { font-weight: 700; font-size: 1.6rem; color: var(--amber); }
 
   /* Форма */
@@ -189,7 +189,7 @@ const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
   .order-seg { display: flex; gap: 0.4rem; background: var(--char-2); padding: 0.25rem; border-radius: 999px; }
   .order-seg__opt { flex: 1; }
   .order-seg__opt input { position: absolute; opacity: 0; pointer-events: none; }
-  .order-seg__opt span { display: block; text-align: center; cursor: pointer; font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; padding: 0.55em 0.4em; border-radius: 999px; color: var(--ink-soft); transition: background 0.25s var(--ease), color 0.25s var(--ease); }
+  .order-seg__opt span { display: block; text-align: center; cursor: pointer; font-family: var(--font-body); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; padding: 0.55em 0.4em; border-radius: 999px; color: var(--ink-soft); transition: background 0.25s var(--ease), color 0.25s var(--ease); }
   .order-seg__opt input:checked + span { background: var(--amber); color: #1a1206; }
   .order-seg__opt input:focus-visible + span { outline: 2px solid var(--amber); outline-offset: 2px; }
   .order-inp { width: 100%; font-family: var(--font-body); font-size: 0.95rem; color: var(--cream); background: var(--char-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.7em 0.9em; }

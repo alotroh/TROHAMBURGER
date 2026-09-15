@@ -5,6 +5,24 @@
    градиенты и стекло.
    ================================================================== */
 
+/* -------- Шрифты (локальные, уличный вайб) --------
+   Druk Wide Cyrillic — крупные заголовки и логотип (эстетика Frank/Basta).
+   Uni Sans — основной текст, кнопки, меню, подписи. */
+@font-face {
+  font-family: 'Druk Wide Cyr';
+  src: url('/fonts/druk-wide-cyr-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Uni Sans';
+  src: url('/fonts/uni-sans.ttf') format('truetype');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* -------- Токены -------- */
 :root {
   /* Уголь — фоновая группа */
@@ -41,9 +59,9 @@
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0.4 0.4 0.4 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
 
   /* Типографика */
-  --font-display: 'Oswald', 'PT Sans Narrow', 'Arial Narrow', system-ui, sans-serif;
+  --font-display: 'Druk Wide Cyr', 'Oswald', Impact, sans-serif;
   --font-hand: 'Caveat', 'Comic Sans MS', cursive;
-  --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-body: 'Uni Sans', 'Manrope', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 
   /* Сетка и ритм */
   --maxw: 1280px;
@@ -105,19 +123,20 @@ body::after {
 img, picture, video { display: block; max-width: 100%; height: auto; }
 a { color: inherit; text-decoration: none; }
 
-/* -------- Типографика -------- */
+/* -------- Типографика --------
+   h1/h2 — Druk Wide (широкий, тяжёлый; меньше кегль, свой межбукв и интерлиньяж).
+   h3/h4 — Uni Sans bold. */
 h1, h2, h3, h4 {
-  font-family: var(--font-display);
   font-weight: 700;
-  line-height: 0.98;
-  letter-spacing: 0.005em;
   text-transform: uppercase;
   color: var(--ink);
   text-wrap: balance;
 }
-h1 { font-size: clamp(2.9rem, 1.6rem + 5.6vw, 6.4rem); }
-h2 { font-size: clamp(2.1rem, 1.4rem + 3vw, 4rem); }
-h3 { font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem); }
+h1, h2 { font-family: var(--font-display); letter-spacing: 0; line-height: 1.06; }
+h3, h4 { font-family: var(--font-body); letter-spacing: 0.01em; line-height: 1.02; }
+h1 { font-size: clamp(2.1rem, 1.4rem + 3.4vw, 4.4rem); }
+h2 { font-size: clamp(1.65rem, 1.25rem + 2vw, 2.9rem); }
+h3 { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.9rem); }
 p { text-wrap: pretty; }
 
 /* Огненная заливка ключевых слов заголовка */
@@ -145,7 +164,7 @@ p { text-wrap: pretty; }
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.28em;
@@ -199,7 +218,7 @@ p { text-wrap: pretty; }
 
 /* Индекс раздела */
 .index-num {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -217,7 +236,7 @@ p { text-wrap: pretty; }
   display: inline-flex;
   align-items: center;
   gap: 0.55em;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 0.98rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -253,7 +272,7 @@ p { text-wrap: pretty; }
   display: inline-flex;
   align-items: center;
   gap: 0.45em;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-weight: 600;
   font-size: 1rem;
   letter-spacing: 0.05em;
@@ -294,7 +313,7 @@ p { text-wrap: pretty; }
 /* Метка позиции меню (хит/остро/новинка/веган) */
 .tag {
   display: inline-block;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -387,7 +406,7 @@ textarea:focus-visible, select:focus-visible {
 /* Ссылка «назад» */
 .back-link {
   display: inline-flex; align-items: center; gap: 0.5rem;
-  font-family: var(--font-display); font-weight: 600; letter-spacing: 0.05em;
+  font-family: var(--font-body); font-weight: 600; letter-spacing: 0.05em;
   text-transform: uppercase; color: var(--ink-soft);
   transition: color 0.3s var(--ease);
 }
