@@ -6,19 +6,34 @@
    ================================================================== */
 
 /* -------- Шрифты (локальные, уличный вайб) --------
-   Druk Wide Cyrillic — крупные заголовки и логотип (эстетика Frank/Basta).
-   Uni Sans — основной текст, кнопки, меню, подписи. */
+   Sol-Kol — основной: заголовки и крупный текст hero.
+   Opsilon — дополнительный: основной текст, подписи, UI.
+   Druk Wide Cyrillic — акцент: логотип и бегущая строка. */
 @font-face {
-  font-family: 'Druk Wide Cyr';
-  src: url('/fonts/druk-wide-cyr-bold.otf') format('opentype');
-  font-weight: 700;
+  font-family: 'Sol-Kol';
+  src: url('/fonts/sol-kol.ttf') format('truetype');
+  font-weight: 400 900;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Uni Sans';
-  src: url('/fonts/uni-sans.ttf') format('truetype');
-  font-weight: 400 800;
+  font-family: 'Opsilon';
+  src: url('/fonts/opsilon.otf') format('opentype');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Opsilon';
+  src: url('/fonts/opsilon-italic.otf') format('opentype');
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Druk Wide Cyr';
+  src: url('/fonts/druk-wide-cyr-bold.otf') format('opentype');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -59,9 +74,10 @@
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0.4 0.4 0.4 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
 
   /* Типографика */
-  --font-display: 'Druk Wide Cyr', 'Oswald', Impact, sans-serif;
+  --font-display: 'Sol-Kol', 'Oswald', Impact, sans-serif;         /* основной — заголовки/hero */
+  --font-body: 'Opsilon', 'Manrope', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; /* дополнительный — текст */
+  --font-accent: 'Druk Wide Cyr', 'Oswald', Impact, sans-serif;    /* акцент — логотип, бегущая строка */
   --font-hand: 'Caveat', 'Comic Sans MS', cursive;
-  --font-body: 'Uni Sans', 'Manrope', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 
   /* Сетка и ритм */
   --maxw: 1280px;
@@ -132,11 +148,11 @@ h1, h2, h3, h4 {
   color: var(--ink);
   text-wrap: balance;
 }
-h1, h2 { font-family: var(--font-display); letter-spacing: 0; line-height: 1.06; }
-h3, h4 { font-family: var(--font-body); letter-spacing: 0.01em; line-height: 1.02; }
-h1 { font-size: clamp(2.1rem, 1.4rem + 3.4vw, 4.4rem); }
-h2 { font-size: clamp(1.65rem, 1.25rem + 2vw, 2.9rem); }
-h3 { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.9rem); }
+h1, h2 { font-family: var(--font-display); letter-spacing: 0.01em; line-height: 1.02; }
+h3, h4 { font-family: var(--font-body); letter-spacing: 0.01em; line-height: 1.05; }
+h1 { font-size: clamp(2.7rem, 1.6rem + 5.2vw, 5.8rem); }
+h2 { font-size: clamp(2rem, 1.4rem + 2.9vw, 3.7rem); }
+h3 { font-size: clamp(1.4rem, 1.1rem + 1.1vw, 2rem); }
 p { text-wrap: pretty; }
 
 /* Огненная заливка ключевых слов заголовка */
