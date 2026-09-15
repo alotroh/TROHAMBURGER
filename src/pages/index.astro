@@ -2,7 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PhotoSlot from '../components/PhotoSlot.astro';
 import { BURGERS, FACTS } from '../data/menu.mjs';
-import { BURGER_PHOTOS } from '../data/media.mjs';
+import { BURGER_PHOTOS, PHOTO } from '../data/media.mjs';
+import { TELEGRAM } from '../config/site.mjs';
 import { websiteSchema, restaurantSchema } from '../config/schema.mjs';
 
 const jsonLd = [websiteSchema(), restaurantSchema({ image: '/og-cover.svg' })];
@@ -156,7 +157,8 @@ const steps = [
       <div class="process__media reveal">
         <PhotoSlot
           label="Кухня в деле"
-          note="Повар жмёт котлету лопаткой на чугуне, летят капли жира, пар. Вертикальный кадр."
+          image={PHOTO.press}
+          alt="Повар жмёт котлету лопаткой на раскалённом чугуне"
           ratio="4/5"
           sizes="(max-width: 940px) 90vw, 42vw"
           priority={true}
@@ -189,23 +191,23 @@ const steps = [
       <div class="section-head reveal">
         <span class="index-num">04 · Как у нас</span>
         <h2 id="gallery-title">Атмосфера <span class="flame">места</span></h2>
-        <p class="muted">Здесь пять слотов под фото. Замените на реальные снимки заведения — подпись подскажет, что снять.</p>
+        <p class="muted">Тёплый свет, кирпич, живой огонь на кухне. Заходите — сами всё увидите.</p>
       </div>
       <div class="gallery__grid">
         <div class="gallery__cell gallery__cell--tall reveal" style="--i:0">
-          <PhotoSlot label="Зал" note="Общий план зала: деревянные столы, тёплый свет, люди едят. Вертикально." ratio="4/5" sizes="(max-width:720px) 92vw, 32vw" />
+          <PhotoSlot label="Зал" image={PHOTO.hall} alt="Зал бургерной: деревянные столы, тёплый свет, гости" ratio="4/5" sizes="(max-width:720px) 92vw, 32vw" />
         </div>
         <div class="gallery__cell reveal" style="--i:1">
-          <PhotoSlot label="Бургер крупно" note="Один бургер в разрезе на доске, крупный план начинки." ratio="1/1" sizes="(max-width:720px) 92vw, 24vw" />
+          <PhotoSlot label="Бургер крупно" image={PHOTO.burgerCut} alt="Бургер в разрезе крупным планом" ratio="1/1" sizes="(max-width:720px) 92vw, 24vw" />
         </div>
         <div class="gallery__cell reveal" style="--i:2">
-          <PhotoSlot label="Барная стойка" note="Стойка с кранами крафта и лимонадами, бариста наливает." ratio="1/1" sizes="(max-width:720px) 92vw, 24vw" />
+          <PhotoSlot label="Барная стойка" image={PHOTO.bar} alt="Барная стойка с кранами и лимонадами" ratio="1/1" sizes="(max-width:720px) 92vw, 24vw" />
         </div>
         <div class="gallery__cell gallery__cell--wide reveal" style="--i:3">
-          <PhotoSlot label="Команда у гриля" note="Повара за работой на открытой кухне, огонь, движение. Горизонтально." ratio="16/9" sizes="(max-width:720px) 92vw, 56vw" />
+          <PhotoSlot label="Команда у гриля" image={PHOTO.team} alt="Повара за работой на открытой кухне у огня" ratio="16/9" sizes="(max-width:720px) 92vw, 56vw" />
         </div>
         <div class="gallery__cell reveal" style="--i:4">
-          <PhotoSlot label="Картошка и соусы" note="Картошка фри и чашки с соусами сверху, флэтлей." ratio="4/5" sizes="(max-width:720px) 92vw, 24vw" />
+          <PhotoSlot label="Картошка и соусы" image={PHOTO.friesSauces} alt="Картошка фри и чашки с соусами, вид сверху" ratio="4/5" sizes="(max-width:720px) 92vw, 24vw" />
         </div>
       </div>
     </div>
@@ -253,7 +255,7 @@ const steps = [
   </section>
 
   <!-- КОРЗИНА (появляется, когда что-то выбрано) -->
-  <div class="cart" data-cart>
+  <div class="cart" data-cart data-tg-token={TELEGRAM.botToken} data-tg-chat={TELEGRAM.chatId}>
     <button class="cart__bar" data-cart-open type="button" aria-label="Открыть корзину">
       <span class="cart__ico">🛒</span>
       <span class="cart__meta">
@@ -273,7 +275,22 @@ const steps = [
         <span>Итого</span>
         <span class="cart__total"><span data-cart-total>0</span> ₽</span>
       </div>
-      <a class="btn btn--ember cart__checkout" href="/menu/#zakaz">Оформить заказ <span class="arrow" aria-hidden="true">→</span></a>
+
+      <form class="cart__form" data-cart-form>
+        <div class="cart__seg" role="radiogroup" aria-label="Способ получения">
+          <label class="cart__seg-opt"><input type="radio" name="mode" value="Доставка" checked /><span>Доставка</span></label>
+          <label class="cart__seg-opt"><input type="radio" name="mode" value="Самовывоз" /><span>Самовывоз</span></label>
+        </div>
+        <input class="cart__inp" name="name" required autocomplete="name" placeholder="Как вас зовут" />
+        <input class="cart__inp" name="phone" required inputmode="tel" autocomplete="tel" placeholder="Телефон для связи" />
+        <input class="cart__inp" name="address" data-address autocomplete="street-address" placeholder="Адрес доставки" />
+        <textarea class="cart__inp cart__area" name="comment" rows="2" placeholder="Комментарий (по желанию): без лука, домофон…"></textarea>
+        <button class="btn btn--ember cart__submit" type="submit" data-cart-submit>
+          Оформить заказ <span class="arrow" aria-hidden="true">→</span>
+        </button>
+        <p class="cart__status" data-cart-status hidden></p>
+      </form>
+
       <button class="cart__clear" data-cart-clear type="button">Очистить корзину</button>
     </div>
   </div>
@@ -550,11 +567,37 @@ const steps = [
   .cart-row__sum { min-width: 4.5rem; text-align: right; font-family: var(--font-display); font-weight: 700; color: var(--amber); }
   .cart__foot { display: flex; align-items: baseline; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--line); font-family: var(--font-display); text-transform: uppercase; }
   .cart__total { font-weight: 700; font-size: 1.4rem; color: var(--amber); }
-  .cart__checkout { width: 100%; justify-content: center; margin-top: 0.9rem; }
+  /* Форма оформления */
+  .cart__form { display: grid; gap: 0.5rem; margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--line); }
+  .cart__seg { display: flex; gap: 0.4rem; background: var(--char-2); padding: 0.25rem; border-radius: 999px; }
+  .cart__seg-opt { flex: 1; }
+  .cart__seg-opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .cart__seg-opt span {
+    display: block; text-align: center; cursor: pointer;
+    font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase;
+    padding: 0.5em 0.4em; border-radius: 999px; color: var(--ink-soft);
+    transition: background 0.25s var(--ease), color 0.25s var(--ease);
+  }
+  .cart__seg-opt input:checked + span { background: var(--amber); color: #1a1206; }
+  .cart__seg-opt input:focus-visible + span { outline: 2px solid var(--amber); outline-offset: 2px; }
+  .cart__inp {
+    width: 100%;
+    font-family: var(--font-body); font-size: 0.95rem; color: var(--cream);
+    background: var(--char-2); border: 1px solid var(--line); border-radius: var(--radius-sm);
+    padding: 0.7em 0.9em;
+  }
+  .cart__inp::placeholder { color: var(--ink-mute); }
+  .cart__inp:focus-visible { outline: none; border-color: var(--amber); }
+  .cart__area { resize: vertical; min-height: 2.6rem; }
+  .cart__submit { width: 100%; justify-content: center; margin-top: 0.3rem; }
+  .cart__status { font-size: 0.85rem; line-height: 1.4; margin-top: 0.2rem; color: var(--ink-soft); }
+  .cart__status--ok { color: #7bd36a; }
+  .cart__status--err { color: var(--ember); }
   .cart__clear { display: block; width: 100%; margin-top: 0.6rem; background: transparent; border: 0; color: var(--ink-mute); font-size: 0.82rem; cursor: pointer; }
   .cart__clear:hover { color: var(--ember); }
   @media (max-width: 760px) {
     .cart { left: 1rem; right: 1rem; width: auto; }
+    .cart__drawer { max-height: 78vh; overflow-y: auto; }
   }
 
   /* ---------- КАК ГОТОВИМ ---------- */
@@ -631,127 +674,191 @@ const steps = [
   }
 </style>
 
-<script>
-  // ---------- КОРЗИНА ----------
-  // Клик по карточке бургера добавляет его в корзину, кнопка «−» убирает.
-  // Состояние храним в localStorage, чтобы не пропадало при перезагрузке.
-  type Cart = Record<string, number>;
-  const KEY = 'troha_cart';
 
-  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-burger]'));
-  const cartEl = document.querySelector<HTMLElement>('[data-cart]');
+<script>
+  // ================= КОРЗИНА И ЗАКАЗ =================
+  // Клик по карточке бургера — добавить, «−» — убрать. Состояние в localStorage.
+  // Оформление шлёт заказ в Telegram-бота (если заданы токен и chat id в
+  // src/config/site.mjs), иначе работает в демо-режиме.
+  const KEY = 'troha_cart';
+  const cards = Array.from(document.querySelectorAll('[data-burger]'));
+  const cartEl = document.querySelector('[data-cart]');
 
   if (cards.length && cartEl) {
-    // Справочник бургеров из data-атрибутов карточек.
-    const catalog: Record<string, { name: string; price: number }> = {};
+    const catalog = {};
     cards.forEach((c) => {
-      const slug = c.dataset.slug!;
-      catalog[slug] = { name: c.dataset.name || '', price: Number(c.dataset.price) || 0 };
+      catalog[c.dataset.slug] = { name: c.dataset.name || '', price: Number(c.dataset.price) || 0 };
     });
 
-    const load = (): Cart => {
-      try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
-      catch { return {}; }
-    };
-    const save = (c: Cart) => { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch {} };
+    const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch { return {}; } };
+    const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch {} };
+    let cart = load();
 
-    let cart: Cart = load();
+    const $ = (s) => cartEl.querySelector(s);
+    const countEl = $('[data-cart-count]');
+    const sumEl = $('[data-cart-sum]');
+    const totalEl = $('[data-cart-total]');
+    const listEl = $('[data-cart-list]');
+    const drawer = $('[data-cart-drawer]');
+    const form = $('[data-cart-form]');
+    const statusEl = $('[data-cart-status]');
+    const addressInp = $('[data-address]');
 
-    const countEl = cartEl.querySelector('[data-cart-count]')!;
-    const sumEl = cartEl.querySelector('[data-cart-sum]')!;
-    const totalEl = cartEl.querySelector('[data-cart-total]')!;
-    const listEl = cartEl.querySelector<HTMLElement>('[data-cart-list]')!;
-    const drawer = cartEl.querySelector<HTMLElement>('[data-cart-drawer]')!;
-
+    const fmt = (v) => v.toLocaleString('ru-RU');
     const totals = () => {
       let n = 0, sum = 0;
-      for (const slug in cart) { n += cart[slug]; sum += cart[slug] * (catalog[slug]?.price || 0); }
+      for (const s in cart) { n += cart[s]; sum += cart[s] * (catalog[s]?.price || 0); }
       return { n, sum };
     };
 
-    const fmt = (v: number) => v.toLocaleString('ru-RU');
-
-    const renderCards = () => {
-      cards.forEach((c) => {
-        const slug = c.dataset.slug!;
-        const q = cart[slug] || 0;
-        const ctrl = c.querySelector<HTMLElement>('[data-qty-ctrl]')!;
-        const count = c.querySelector<HTMLElement>('[data-count]')!;
-        c.classList.toggle('in-cart', q > 0);
-        ctrl.hidden = q === 0;
-        count.textContent = String(q);
-      });
-    };
+    const renderCards = () => cards.forEach((c) => {
+      const q = cart[c.dataset.slug] || 0;
+      c.classList.toggle('in-cart', q > 0);
+      c.querySelector('[data-qty-ctrl]').hidden = q === 0;
+      c.querySelector('[data-count]').textContent = String(q);
+    });
 
     const renderCart = () => {
-      const { n, sum } = totals();
-      countEl.textContent = String(n);
-      sumEl.textContent = fmt(sum);
-      totalEl.textContent = fmt(sum);
-      cartEl.classList.toggle('is-active', n > 0);
-      if (n === 0) drawer.hidden = true;
-
-      // строки в выдвижной корзине
+      const t = totals();
+      countEl.textContent = String(t.n);
+      sumEl.textContent = fmt(t.sum);
+      totalEl.textContent = fmt(t.sum);
+      cartEl.classList.toggle('is-active', t.n > 0);
+      if (t.n === 0) { drawer.hidden = true; }
       listEl.innerHTML = '';
-      for (const slug in cart) {
-        const q = cart[slug];
-        if (!q) continue;
-        const item = catalog[slug];
+      for (const s in cart) {
+        const q = cart[s]; if (!q) continue;
+        const it = catalog[s];
         const li = document.createElement('li');
         li.className = 'cart-row';
         li.innerHTML =
-          `<span class="cart-row__name">${item.name}<small>${fmt(item.price)} ₽</small></span>` +
-          `<span class="cart-row__ctrl">` +
-            `<button class="cart-row__btn" data-dec="${slug}" aria-label="Убрать одну">−</button>` +
-            `<span class="cart-row__q">${q}</span>` +
-            `<button class="cart-row__btn" data-inc="${slug}" aria-label="Добавить одну">+</button>` +
-          `</span>` +
-          `<span class="cart-row__sum">${fmt(q * item.price)} ₽</span>`;
+          '<span class="cart-row__name">' + it.name + '<small>' + fmt(it.price) + ' ₽</small></span>' +
+          '<span class="cart-row__ctrl">' +
+            '<button class="cart-row__btn" data-dec="' + s + '" type="button" aria-label="Убрать одну">−</button>' +
+            '<span class="cart-row__q">' + q + '</span>' +
+            '<button class="cart-row__btn" data-inc="' + s + '" type="button" aria-label="Добавить одну">+</button>' +
+          '</span>' +
+          '<span class="cart-row__sum">' + fmt(q * it.price) + ' ₽</span>';
         listEl.appendChild(li);
       }
     };
 
     const render = () => { renderCards(); renderCart(); };
 
-    const add = (slug: string, card?: HTMLElement) => {
-      cart[slug] = (cart[slug] || 0) + 1;
-      save(cart); render();
-      if (card) {
-        const fly = card.querySelector<HTMLElement>('[data-flyup]');
-        if (fly) { fly.classList.remove('pop'); void fly.offsetWidth; fly.classList.add('pop'); }
-      }
+    const add = (slug, card) => {
+      cart[slug] = (cart[slug] || 0) + 1; persist(); render();
+      if (card) { const f = card.querySelector('[data-flyup]'); if (f) { f.classList.remove('pop'); void f.offsetWidth; f.classList.add('pop'); } }
     };
-    const remove = (slug: string) => {
+    const remove = (slug) => {
       if (!cart[slug]) return;
-      cart[slug] -= 1;
-      if (cart[slug] <= 0) delete cart[slug];
-      save(cart); render();
+      cart[slug] -= 1; if (cart[slug] <= 0) delete cart[slug];
+      persist(); render();
     };
 
-    // Клик по карточке = +1 (но не по кнопкам управления количеством).
     cards.forEach((card) => {
-      const slug = card.dataset.slug!;
+      const slug = card.dataset.slug;
       card.addEventListener('click', (e) => {
-        if ((e.target as HTMLElement).closest('[data-minus],[data-plus]')) return;
+        if (e.target.closest('[data-minus],[data-plus]')) return;
         add(slug, card);
       });
       card.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); add(slug, card); }
       });
-      card.querySelector('[data-minus]')?.addEventListener('click', (e) => { e.stopPropagation(); remove(slug); });
-      card.querySelector('[data-plus]')?.addEventListener('click', (e) => { e.stopPropagation(); add(slug, card); });
+      card.querySelector('[data-minus]').addEventListener('click', (e) => { e.stopPropagation(); remove(slug); });
+      card.querySelector('[data-plus]').addEventListener('click', (e) => { e.stopPropagation(); add(slug, card); });
     });
 
-    // Выдвижная корзина: открыть/закрыть, +/- в строках, очистить.
-    cartEl.querySelector('[data-cart-open]')?.addEventListener('click', () => { drawer.hidden = !drawer.hidden; });
-    cartEl.querySelector('[data-cart-close]')?.addEventListener('click', () => { drawer.hidden = true; });
-    cartEl.querySelector('[data-cart-clear]')?.addEventListener('click', () => { cart = {}; save(cart); render(); });
+    $('[data-cart-open]').addEventListener('click', () => { drawer.hidden = !drawer.hidden; });
+    $('[data-cart-close]').addEventListener('click', () => {
+      drawer.hidden = true;
+      statusEl.hidden = true;
+      if (totals().n === 0) cartEl.classList.remove('is-active');
+    });
+    $('[data-cart-clear]').addEventListener('click', () => { cart = {}; persist(); render(); statusEl.hidden = true; });
     listEl.addEventListener('click', (e) => {
-      const t = e.target as HTMLElement;
-      const inc = t.getAttribute('data-inc');
-      const dec = t.getAttribute('data-dec');
-      if (inc) add(inc);
-      if (dec) remove(dec);
+      const t = e.target;
+      if (t.dataset && t.dataset.inc) add(t.dataset.inc);
+      if (t.dataset && t.dataset.dec) remove(t.dataset.dec);
+    });
+
+    const syncMode = () => {
+      const checked = form.querySelector('input[name="mode"]:checked');
+      const delivery = (checked ? checked.value : 'Доставка') === 'Доставка';
+      addressInp.hidden = !delivery;
+      addressInp.required = delivery;
+    };
+    form.querySelectorAll('input[name="mode"]').forEach((r) => r.addEventListener('change', syncMode));
+    syncMode();
+
+    const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const setStatus = (msg, kind) => {
+      statusEl.hidden = false;
+      statusEl.textContent = msg;
+      statusEl.className = 'cart__status' + (kind ? ' cart__status--' + kind : '');
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const t = totals();
+      if (t.n === 0) { setStatus('Сначала выберите бургеры.', 'err'); return; }
+
+      const fd = new FormData(form);
+      const mode = fd.get('mode');
+      const name = String(fd.get('name') || '').trim();
+      const phone = String(fd.get('phone') || '').trim();
+      const address = String(fd.get('address') || '').trim();
+      const comment = String(fd.get('comment') || '').trim();
+      if (!name || !phone || (mode === 'Доставка' && !address)) {
+        setStatus('Заполните имя, телефон' + (mode === 'Доставка' ? ' и адрес.' : '.'), 'err');
+        return;
+      }
+
+      const lines = [];
+      for (const s in cart) { const it = catalog[s]; lines.push('• ' + it.name + ' × ' + cart[s] + ' — ' + fmt(cart[s] * it.price) + ' ₽'); }
+      const text =
+        '🍔 <b>Новый заказ — TROHAMBURGER</b>\n\n' +
+        '<b>Состав:</b>\n' + lines.map(esc).join('\n') + '\n' +
+        '<b>Итого: ' + fmt(t.sum) + ' ₽</b>\n\n' +
+        '<b>Получение:</b> ' + esc(mode) + '\n' +
+        '<b>Имя:</b> ' + esc(name) + '\n' +
+        '<b>Телефон:</b> ' + esc(phone) + '\n' +
+        (mode === 'Доставка' ? '<b>Адрес:</b> ' + esc(address) + '\n' : '') +
+        (comment ? '<b>Комментарий:</b> ' + esc(comment) + '\n' : '');
+
+      const token = cartEl.dataset.tgToken;
+      const chat = cartEl.dataset.tgChat;
+      const submitBtn = form.querySelector('[data-cart-submit]');
+      submitBtn.disabled = true;
+      setStatus('Отправляем заказ…', '');
+
+      const done = () => {
+        cart = {}; persist(); renderCards();
+        // Обнуляем показатели, но КОРЗИНУ ОСТАВЛЯЕМ ВИДИМОЙ — показать успех.
+        countEl.textContent = '0'; sumEl.textContent = '0'; totalEl.textContent = '0';
+        listEl.innerHTML = '';
+        cartEl.classList.add('is-active');
+        drawer.hidden = false;
+        setStatus('Готово! Заказ принят — мы перезвоним для подтверждения. Спасибо 🔥', 'ok');
+        form.reset(); syncMode();
+        submitBtn.disabled = false;
+      };
+
+      if (token && chat) {
+        try {
+          const r = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chat, text: text, parse_mode: 'HTML' }),
+          });
+          if (!r.ok) throw new Error('tg');
+          done();
+        } catch (err) {
+          submitBtn.disabled = false;
+          setStatus('Не получилось отправить автоматически. Позвоните нам — заказ уже собран.', 'err');
+        }
+      } else {
+        setTimeout(done, 500);
+      }
     });
 
     render();

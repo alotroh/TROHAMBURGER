@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PhotoSlot from '../../components/PhotoSlot.astro';
 import { SITE } from '../../config/site.mjs';
+import { PHOTO } from '../../data/media.mjs';
 import { restaurantSchema } from '../../config/schema.mjs';
 
 const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
@@ -47,7 +48,7 @@ const principles = [
         </p>
       </div>
       <div class="story__media reveal">
-        <PhotoSlot label="Тогда и сейчас" note="Архивное фото первой точки / первой сковороды, либо основатель у гриля. Вертикально." ratio="3/4" sizes="(max-width: 940px) 90vw, 40vw" priority={true} />
+        <PhotoSlot label="Тогда и сейчас" image={PHOTO.chef} alt="Основатель у гриля на кухне" ratio="3/4" sizes="(max-width: 940px) 90vw, 40vw" priority={true} />
         <span class="story__badge stamp stamp--ember">с {SITE.since}</span>
       </div>
     </div>
@@ -78,12 +79,12 @@ const principles = [
       <div class="section-head reveal">
         <span class="index-num">Кухня без фильтров</span>
         <h2>Загляните <span class="flame">за прилавок</span></h2>
-        <p class="muted">Слоты под реальные фото кухни. В подписи — что снять.</p>
+        <p class="muted">Открытая кухня, живой огонь и соусы, которые варят при вас. Прятать нам нечего.</p>
       </div>
       <div class="kitchen-grid">
-        <div class="reveal" style="--i:0"><PhotoSlot label="Гриль" note="Котлеты на раскалённом чугуне, момент прожарки, огонь снизу." ratio="1/1" sizes="(max-width:720px) 92vw, 30vw" /></div>
-        <div class="reveal" style="--i:1"><PhotoSlot label="Сборка" note="Руки повара собирают бургер: булка, соус, котлета. Крупно." ratio="1/1" sizes="(max-width:720px) 92vw, 30vw" /></div>
-        <div class="reveal" style="--i:2"><PhotoSlot label="Соусная" note="Повар наливает соус из кастрюли в чашки, процесс варки." ratio="1/1" sizes="(max-width:720px) 92vw, 30vw" /></div>
+        <div class="reveal" style="--i:0"><PhotoSlot label="Гриль" image={PHOTO.grill} alt="Котлеты на раскалённом гриле, языки огня" ratio="1/1" sizes="(max-width:720px) 92vw, 30vw" /></div>
+        <div class="reveal" style="--i:1"><PhotoSlot label="Сборка" image={PHOTO.assembly} alt="Повар собирает бургер в перчатках" ratio="1/1" sizes="(max-width:720px) 92vw, 30vw" /></div>
+        <div class="reveal" style="--i:2"><PhotoSlot label="Соусная" image={PHOTO.saucePour} alt="Повар наливает соус из половника в чашки" ratio="1/1" sizes="(max-width:720px) 92vw, 30vw" /></div>
       </div>
     </div>
   </section>

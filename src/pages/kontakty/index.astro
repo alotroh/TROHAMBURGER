@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PhotoSlot from '../../components/PhotoSlot.astro';
 import { CONTACTS, BUSINESS } from '../../config/site.mjs';
+import { PHOTO } from '../../data/media.mjs';
 import { restaurantSchema } from '../../config/schema.mjs';
 
 const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
@@ -22,7 +23,7 @@ const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
     <div class="container contacts">
       <!-- Карта / фото места -->
       <div class="contacts__map reveal">
-        <PhotoSlot label="Карта / фасад" note="Скриншот карты с точкой заведения или фото фасада с вывеской. Горизонтально." ratio="4/3" sizes="(max-width: 940px) 90vw, 52vw" priority={true} />
+        <PhotoSlot label="Фасад" image={PHOTO.facade} alt="Фасад бургерной вечером со светящейся вывеской" ratio="4/3" sizes="(max-width: 940px) 90vw, 52vw" priority={true} />
         <span class="contacts__pin stamp">мы тут</span>
       </div>
 

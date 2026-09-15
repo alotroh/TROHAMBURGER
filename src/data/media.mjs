@@ -28,3 +28,42 @@ export const BURGER_PHOTOS = {
   'zelyony': zelyony,
   'smoki-bibiko': smokiBibiko,
 };
+
+// Еда (лист 1)
+import foodBurgerCut from '../assets/media/food/burger-cut.jpg';
+import foodFriesSauces from '../assets/media/food/fries-sauces.jpg';
+import foodSaucesRow from '../assets/media/food/sauces-row.jpg';
+import foodDrinks from '../assets/media/food/drinks.jpg';
+import foodSidesBaskets from '../assets/media/food/sides-baskets.jpg';
+import foodFriesSteam from '../assets/media/food/fries-steam.jpg';
+// Кухня (лист 2)
+import kitchenPress from '../assets/media/kitchen/press.jpg';
+import kitchenGrill from '../assets/media/kitchen/grill.jpg';
+import kitchenAssembly from '../assets/media/kitchen/assembly.jpg';
+import kitchenSaucePour from '../assets/media/kitchen/sauce-pour.jpg';
+import kitchenChef from '../assets/media/kitchen/chef.jpg';
+import kitchenTeam from '../assets/media/kitchen/team.jpg';
+// Заведение (лист 3)
+import placeHall from '../assets/media/place/hall.jpg';
+import placeBar from '../assets/media/place/bar.jpg';
+import placeFacade from '../assets/media/place/facade.jpg';
+import placeCorner from '../assets/media/place/corner.jpg';
+
+export const PHOTO = {
+  burgerCut: foodBurgerCut,
+  friesSauces: foodFriesSauces,
+  saucesRow: foodSaucesRow,
+  drinks: foodDrinks,
+  sidesBaskets: foodSidesBaskets,
+  friesSteam: foodFriesSteam,
+  press: kitchenPress,
+  grill: kitchenGrill,
+  assembly: kitchenAssembly,
+  saucePour: kitchenSaucePour,
+  chef: kitchenChef,
+  team: kitchenTeam,
+  hall: placeHall,
+  bar: placeBar,
+  facade: placeFacade,
+  corner: placeCorner,
+};
