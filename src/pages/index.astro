@@ -69,9 +69,10 @@ const steps = [
   <!-- 02 · ПОДХОД -->
   <section class="section panel approach" aria-labelledby="approach-title">
     <div class="container">
-      <div class="section-head reveal">
+      <div class="section-head approach__head reveal">
         <span class="index-num">01 · Почему сюда возвращаются</span>
-        <h2 id="approach-title">Не фастфуд.<br /><span class="flame">Просто честный бургер</span></h2>
+        <span class="approach__stamp stamp stamp--ember">без<br />понтов</span>
+        <h2 id="approach-title" class="approach__title">Не фастфуд.<br /><span class="flame">Просто честный бургер</span></h2>
         <p class="lead">Мы делаем немного позиций, но каждую доводим до ума. Проще выбрать, вкуснее есть.</p>
       </div>
       <div class="approach__grid">
@@ -301,10 +302,13 @@ const steps = [
   .hero__text { max-width: 34rem; }
   .hero__title {
     font-size: clamp(2.9rem, 1.6rem + 6.4vw, 6.6rem);
-    line-height: 1.0;
+    line-height: 0.86;
     margin-bottom: 1.5rem;
+    /* «намазали краской» — утолщаем штрихи обводкой в цвет */
+    -webkit-text-stroke: 2px var(--cream);
     animation: heroIn 0.9s var(--ease) 0.15s backwards;
   }
+  .hero__title .flame { -webkit-text-stroke: 2px var(--amber); }
   .hero__lead {
     max-width: 42ch;
     animation: heroIn 0.9s var(--ease) 0.3s backwards;
@@ -351,6 +355,19 @@ const steps = [
   .marquee:hover .marquee__track { animation-play-state: paused; }
 
   /* ---------- ПОДХОД (редакционный ряд без «коробок») ---------- */
+  .approach__head { position: relative; }
+  .approach__title {
+    font-family: var(--font-accent);
+    font-size: clamp(1.7rem, 1.1rem + 2.2vw, 3rem);
+    line-height: 1.12;
+    letter-spacing: 0;
+  }
+  .approach__stamp {
+    position: absolute;
+    top: -0.5rem; right: 0;
+    font-size: 1.3rem;
+    z-index: 2;
+  }
   .approach__grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -373,12 +390,12 @@ const steps = [
   }
   .approach__item:first-child::before { left: 0; }
   .approach__n {
-    display: block; margin-bottom: 0.75rem;
-    font-family: var(--font-body); font-weight: 700; font-size: 1.4rem; line-height: 1;
-    color: var(--amber); letter-spacing: 0.05em;
+    display: block; margin-bottom: 0.85rem;
+    font-family: var(--font-accent); font-weight: 700; font-size: 2.1rem; line-height: 1;
+    color: var(--amber); letter-spacing: 0;
   }
-  .approach__h { margin-bottom: 0.6rem; font-size: 1.25rem; }
-  .approach__item p { font-size: 0.95rem; }
+  .approach__h { margin-bottom: 0.6rem; font-size: 1.2rem; }
+  .approach__item p { font-size: 0.92rem; }
 
   /* ---------- ВИТРИНА ---------- */
   .burger-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1.25rem, 2vw, 1.75rem); }
@@ -426,8 +443,9 @@ const steps = [
     border-top: 1px solid var(--line);
   }
   .step-row:last-child { border-bottom: 1px solid var(--line); }
-  .step-row__num { font-family: var(--font-body); font-weight: 700; font-size: 2.4rem; line-height: 1; color: var(--ember); }
-  .step-row__title { margin-bottom: 0.4rem; }
+  .step-row__num { font-family: var(--font-accent); font-weight: 700; font-size: 2rem; line-height: 1; color: var(--ember); }
+  .step-row__title { margin-bottom: 0.5rem; }
+  .step-row p { font-size: 0.92rem; max-width: 52ch; }
 
   /* ---------- ГАЛЕРЕЯ ---------- */
   .gallery__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1rem, 2vw, 1.5rem); grid-auto-flow: dense; }

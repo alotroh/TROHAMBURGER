@@ -75,7 +75,8 @@
 
   /* Типографика */
   --font-display: 'Sol-Kol', 'Oswald', Impact, sans-serif;         /* основной — заголовки/hero */
-  --font-body: 'Opsilon', 'Manrope', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; /* дополнительный — текст */
+  --font-body: 'Opsilon', 'Oswald', Impact, sans-serif;            /* капсовые подписи: h3, метки, кнопки, цены */
+  --font-text: 'Manrope', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; /* читаемый текст: абзацы, описания */
   --font-accent: 'Druk Wide Cyr', 'Oswald', Impact, sans-serif;    /* акцент — логотип, бегущая строка */
   --font-hand: 'Caveat', 'Comic Sans MS', cursive;
 
@@ -114,8 +115,8 @@ body {
   margin: 0;
   background: var(--char);
   color: var(--ink);
-  font-family: var(--font-body);
-  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.08rem);
+  font-family: var(--font-text);
+  font-size: clamp(0.95rem, 0.9rem + 0.22vw, 1.05rem);
   line-height: 1.65;
   font-weight: 400;
   letter-spacing: 0.005em;
@@ -195,8 +196,8 @@ p { text-wrap: pretty; }
 }
 
 .lead {
-  font-family: var(--font-body);
-  font-size: clamp(1.08rem, 1rem + 0.5vw, 1.35rem);
+  font-family: var(--font-text);
+  font-size: clamp(1.02rem, 0.95rem + 0.4vw, 1.22rem);
   line-height: 1.55;
   color: var(--ink-soft);
   font-weight: 400;
