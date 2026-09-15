@@ -3,13 +3,14 @@
  * Подвал: бренд, навигация, контакты, часы. Данные — из site.mjs.
  */
 import { SITE, NAV, CONTACTS, BUSINESS } from '../config/site.mjs';
+import Logo from './Logo.astro';
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer panel--solid">
   <div class="container site-footer__inner">
     <div class="site-footer__brand">
-      <a href="/" class="site-footer__logo">🍔 {SITE.brand}</a>
+      <a href="/" class="site-footer__logo"><Logo size={30} /> {SITE.brand}</a>
       <p class="muted site-footer__pitch">
         Смэш-бургеры, картошка двойной обжарки и соусы своей варки.
         Жарим под заказ — быстрее, чем вы выберете напиток.
@@ -65,6 +66,9 @@ const year = new Date().getFullYear();
     gap: clamp(2rem, 4vw, 3.5rem);
   }
   .site-footer__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
     font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 700;
