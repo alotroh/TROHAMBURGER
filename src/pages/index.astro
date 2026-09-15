@@ -496,13 +496,26 @@ const steps = [
     .gallery__grid { grid-template-columns: repeat(2, 1fr); }
     .reviews__grid { grid-template-columns: 1fr; max-width: 560px; }
   }
+  /* На телефоне/планшете бургер выше, а текст — под ним на тёмной подложке,
+     чтобы лид не налезал на бургер. */
+  @media (max-width: 760px) {
+    .hero::after {
+      background: linear-gradient(180deg,
+        rgba(8,6,4,0) 0%, rgba(8,6,4,0) 24%,
+        rgba(8,6,4,0.5) 44%, rgba(8,6,4,0.9) 66%, rgba(8,6,4,0.98) 100%);
+    }
+    .hero__title { -webkit-text-stroke-width: 1.2px; }
+    .hero__title .flame { -webkit-text-stroke-width: 1.2px; }
+    .hero__text { max-width: 100%; }
+    .hero__lead { max-width: 100%; }
+  }
   @media (max-width: 560px) {
     .approach__grid, .burger-grid { grid-template-columns: 1fr; }
     .approach__item { border-left: 0; padding-left: 0; padding-top: 2rem; }
     .approach__item::before { width: 2rem; }
     .hero__facts { grid-template-columns: 1fr 1fr; }
-    .hero__stamp--1 { top: 20%; left: 4%; }
-    .hero__stamp--2 { top: 30%; right: 4%; }
+    .hero__stamp--1 { top: 16%; left: 4%; }
+    .hero__stamp--2 { top: 26%; right: 4%; }
     .gallery__cell--tall { grid-row: span 1; }
     .gallery__cell--wide { grid-column: span 2; }
   }

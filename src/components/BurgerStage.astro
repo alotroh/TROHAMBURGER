@@ -112,6 +112,9 @@ import burger from '../assets/media/burger-cut.png';
 
   @media (max-width: 720px) {
     .stage__steam { display: none; }
+    /* На телефоне бургер выше и чуть меньше — текст hero ложится под ним */
+    .stage__orbit { top: 30%; }
+    .stage__img { width: min(76vmin, 520px); }
   }
   @media (prefers-reduced-motion: reduce) {
     .stage__img,
