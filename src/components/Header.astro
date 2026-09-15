@@ -34,7 +34,7 @@ const { transparent = false, currentPath = '' } = Astro.props;
       </ul>
     </nav>
 
-    <a class="btn site-header__cta" href="/menu/#zakaz" data-track="click_order">
+    <a class="btn site-header__cta" href="/zakaz/" data-track="click_order">
       {CTA.order} <span class="arrow" aria-hidden="true">→</span>
     </a>
 
@@ -49,7 +49,7 @@ const { transparent = false, currentPath = '' } = Astro.props;
         {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
       </ul>
     </nav>
-    <a class="btn mobile-menu__cta" href="/menu/#zakaz">{CTA.order}</a>
+    <a class="btn mobile-menu__cta" href="/zakaz/">{CTA.order}</a>
   </div>
 </header>
 

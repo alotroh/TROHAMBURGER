@@ -1,0 +1,358 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import { MENU } from '../../data/menu.mjs';
+import { BURGER_PHOTOS } from '../../data/media.mjs';
+import { TELEGRAM } from '../../config/site.mjs';
+import { restaurantSchema } from '../../config/schema.mjs';
+
+const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
+---
+
+<BaseLayout seoKey="order" jsonLd={jsonLd} showStickyCta={false}>
+  <section class="page-hero panel">
+    <div class="container">
+      <span class="eyebrow">Собрать заказ</span>
+      <h1>Собери свой <span class="flame">заказ</span></h1>
+      <p class="lead page-hero__lead">
+        Плюсуй, что хочешь — бургеры, закуски, напитки, соусы. Сумма считается сама. Оформление внизу справа.
+      </p>
+    </div>
+  </section>
+
+  <section class="section panel--solid">
+    <div class="container">
+      <div class="order-layout" data-order-root data-tg-token={TELEGRAM.botToken} data-tg-chat={TELEGRAM.chatId}>
+        <!-- Позиции -->
+        <div class="order-main">
+          {MENU.map((cat) => (
+            <div class="order-cat" id={cat.id}>
+              <div class="order-cat__head">
+                <h2 class="order-cat__title">{cat.title}</h2>
+                <span class="order-cat__kicker">{cat.kicker}</span>
+              </div>
+              <div class="order-items">
+                {cat.items.map((it, i) => (
+                  <div class="oitem" data-item data-id={`${cat.id}-${i}`} data-name={it.name} data-price={it.price}>
+                    {it.slug && BURGER_PHOTOS[it.slug] && (
+                      <div class="oitem__thumb">
+                        <Image src={BURGER_PHOTOS[it.slug]} alt={it.name} widths={[120, 200]} sizes="80px" />
+                      </div>
+                    )}
+                    <div class="oitem__info">
+                      <span class="oitem__name">
+                        {it.name}
+                        {it.tag && <span class={`tag tag--${it.tag}`}>{it.tag}</span>}
+                      </span>
+                      <span class="oitem__desc muted">{it.desc}</span>
+                    </div>
+                    <div class="oitem__right">
+                      <span class="oitem__price">{it.price} ₽</span>
+                      <div class="stepper" data-stepper>
+                        <button class="stepper__btn" data-dec type="button" aria-label={`Убрать «${it.name}»`}>−</button>
+                        <span class="stepper__q" data-qty>0</span>
+                        <button class="stepper__btn" data-inc type="button" aria-label={`Добавить «${it.name}»`}>+</button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <!-- Калькулятор / оформление -->
+        <aside class="order-side">
+          <div class="order-summary">
+            <div class="order-summary__head">
+              <h2 class="order-summary__title">Ваш заказ</h2>
+              <button class="order-summary__clear" data-clear type="button" hidden>очистить</button>
+            </div>
+            <ul class="order-summary__list" data-sum-list>
+              <li class="order-summary__empty" data-empty>Пока пусто. Плюсуй позиции слева 👉</li>
+            </ul>
+            <div class="order-summary__total">
+              <span>Итого</span>
+              <span class="order-summary__sum"><span data-total>0</span> ₽</span>
+            </div>
+
+            <form class="order-form" data-order-form>
+              <div class="order-seg" role="radiogroup" aria-label="Способ получения">
+                <label class="order-seg__opt"><input type="radio" name="mode" value="Доставка" checked /><span>Доставка</span></label>
+                <label class="order-seg__opt"><input type="radio" name="mode" value="Самовывоз" /><span>Самовывоз</span></label>
+              </div>
+              <input class="order-inp" name="name" required autocomplete="name" placeholder="Как вас зовут" />
+              <input class="order-inp" name="phone" required inputmode="tel" autocomplete="tel" placeholder="Телефон для связи" />
+              <input class="order-inp" name="address" data-address autocomplete="street-address" placeholder="Адрес доставки" />
+              <textarea class="order-inp order-area" name="comment" rows="2" placeholder="Комментарий: без лука, домофон, ко времени…"></textarea>
+              <button class="btn btn--ember order-submit" type="submit" data-submit>
+                Оформить заказ <span class="arrow" aria-hidden="true">→</span>
+              </button>
+              <p class="order-status" data-status hidden></p>
+            </form>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .order-layout {
+    display: grid;
+    grid-template-columns: 1.55fr 0.95fr;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: start;
+  }
+
+  /* Категории и позиции */
+  .order-cat + .order-cat { margin-top: clamp(2.5rem, 5vw, 4rem); }
+  .order-cat__head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--ember); }
+  .order-cat__title { font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.4rem); }
+  .order-cat__kicker { font-family: var(--font-hand); color: var(--amber); font-size: 1.25rem; }
+
+  .order-items { display: grid; gap: 0.5rem; }
+  .oitem {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.9rem;
+    background: var(--char-3);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+  }
+  .oitem.in-order { border-color: rgba(255,180,0,0.55); background: var(--char-4); }
+  .oitem__thumb { width: 68px; height: 68px; border-radius: var(--radius-sm); overflow: hidden; flex: none; }
+  .oitem__thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .oitem__info { display: grid; gap: 0.2rem; min-width: 0; }
+  .oitem__name { display: inline-flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; text-transform: uppercase; color: var(--cream); }
+  .oitem__desc { font-size: 0.82rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .oitem__right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
+  .oitem__price { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--amber); white-space: nowrap; }
+
+  /* Степпер */
+  .stepper { display: inline-flex; align-items: center; gap: 0.15rem; background: var(--char-2); border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem; }
+  .oitem.in-order .stepper { background: var(--amber); border-color: var(--amber); }
+  .stepper__btn {
+    width: 2rem; height: 2rem; display: grid; place-items: center;
+    border: 0; border-radius: 50%; background: transparent; color: var(--cream);
+    font-family: var(--font-display); font-size: 1.4rem; line-height: 1; cursor: pointer;
+    transition: background 0.2s var(--ease);
+  }
+  .oitem.in-order .stepper__btn { color: #1a1206; }
+  .stepper__btn:hover { background: rgba(255,180,0,0.18); }
+  .oitem.in-order .stepper__btn:hover { background: rgba(26,18,6,0.15); }
+  .stepper__q { min-width: 1.6rem; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+  .oitem.in-order .stepper__q { color: #1a1206; }
+
+  /* Калькулятор */
+  .order-side { position: sticky; top: 90px; }
+  .order-summary { background: var(--char-3); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(1.25rem, 2.5vw, 1.75rem); }
+  .order-summary__head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1rem; }
+  .order-summary__title { font-size: 1.5rem; }
+  .order-summary__clear { background: transparent; border: 0; color: var(--ink-mute); font-size: 0.8rem; cursor: pointer; }
+  .order-summary__clear:hover { color: var(--ember); }
+  .order-summary__list { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: 0.6rem; max-height: 34vh; overflow-y: auto; }
+  .order-summary__empty { color: var(--ink-mute); font-size: 0.9rem; padding: 0.5rem 0; }
+  .sum-row { display: flex; align-items: center; gap: 0.6rem; font-size: 0.9rem; }
+  .sum-row__name { flex: 1; min-width: 0; }
+  .sum-row__name b { font-weight: 600; }
+  .sum-row__mini { display: inline-flex; align-items: center; gap: 0.1rem; }
+  .sum-row__mini button { width: 1.5rem; height: 1.5rem; border: 1px solid var(--line); background: var(--char-4); color: var(--cream); border-radius: 50%; font-family: var(--font-display); cursor: pointer; line-height: 1; }
+  .sum-row__mini button:hover { border-color: var(--amber); color: var(--amber); }
+  .sum-row__mini span { min-width: 1.2rem; text-align: center; font-weight: 700; }
+  .sum-row__sum { min-width: 4.2rem; text-align: right; font-family: var(--font-display); font-weight: 700; color: var(--amber); }
+  .order-summary__total { display: flex; align-items: baseline; justify-content: space-between; padding-top: 0.9rem; border-top: 1px solid var(--line); font-family: var(--font-display); text-transform: uppercase; font-weight: 600; }
+  .order-summary__sum { font-weight: 700; font-size: 1.6rem; color: var(--amber); }
+
+  /* Форма */
+  .order-form { display: grid; gap: 0.55rem; margin-top: 1.1rem; padding-top: 1.1rem; border-top: 1px solid var(--line); }
+  .order-seg { display: flex; gap: 0.4rem; background: var(--char-2); padding: 0.25rem; border-radius: 999px; }
+  .order-seg__opt { flex: 1; }
+  .order-seg__opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .order-seg__opt span { display: block; text-align: center; cursor: pointer; font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; padding: 0.55em 0.4em; border-radius: 999px; color: var(--ink-soft); transition: background 0.25s var(--ease), color 0.25s var(--ease); }
+  .order-seg__opt input:checked + span { background: var(--amber); color: #1a1206; }
+  .order-seg__opt input:focus-visible + span { outline: 2px solid var(--amber); outline-offset: 2px; }
+  .order-inp { width: 100%; font-family: var(--font-body); font-size: 0.95rem; color: var(--cream); background: var(--char-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.7em 0.9em; }
+  .order-inp::placeholder { color: var(--ink-mute); }
+  .order-inp:focus-visible { outline: none; border-color: var(--amber); }
+  .order-area { resize: vertical; min-height: 2.6rem; }
+  .order-submit { width: 100%; justify-content: center; margin-top: 0.3rem; }
+  .order-status { font-size: 0.85rem; line-height: 1.4; color: var(--ink-soft); }
+  .order-status--ok { color: #7bd36a; }
+  .order-status--err { color: var(--ember); }
+
+  @media (max-width: 940px) {
+    .order-layout { grid-template-columns: 1fr; }
+    .order-side { position: static; }
+    .oitem__desc { -webkit-line-clamp: 3; }
+  }
+  @media (max-width: 520px) {
+    .oitem { grid-template-columns: 1fr auto; }
+    .oitem__thumb { display: none; }
+  }
+</style>
+
+<script>
+  // ============ КОНСТРУКТОР ЗАКАЗА (/zakaz/) ============
+  // Делегирование событий — надёжнее, чем слушатель на каждой кнопке.
+  const KEY = 'troha_order';
+  const root = document.querySelector('[data-order-root]');
+
+  if (root) {
+    const rows = Array.from(root.querySelectorAll('[data-item]'));
+    const catalog = {};
+    rows.forEach((r) => {
+      catalog[r.dataset.id] = { name: r.dataset.name || '', price: Number(r.dataset.price) || 0, el: r };
+    });
+
+    const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch { return {}; } };
+    const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {} };
+    let state = load();
+
+    const q = (s) => root.querySelector(s);
+    const listEl = q('[data-sum-list]');
+    const emptyEl = q('[data-empty]');
+    const totalEl = q('[data-total]');
+    const clearBtn = q('[data-clear]');
+    const form = q('[data-order-form]');
+    const statusEl = q('[data-status]');
+    const addressInp = q('[data-address]');
+
+    const fmt = (v) => v.toLocaleString('ru-RU');
+    const totals = () => {
+      let n = 0, sum = 0;
+      for (const id in state) { n += state[id]; sum += state[id] * (catalog[id]?.price || 0); }
+      return { n, sum };
+    };
+
+    const inc = (id) => { state[id] = (state[id] || 0) + 1; persist(); render(); };
+    const dec = (id) => { if (!state[id]) return; state[id] -= 1; if (state[id] <= 0) delete state[id]; persist(); render(); };
+
+    const render = () => {
+      // строки-позиции
+      rows.forEach((r) => {
+        const qty = state[r.dataset.id] || 0;
+        r.classList.toggle('in-order', qty > 0);
+        const qEl = r.querySelector('[data-qty]');
+        if (qEl) qEl.textContent = String(qty);
+      });
+      // сводка
+      const t = totals();
+      totalEl.textContent = fmt(t.sum);
+      clearBtn.hidden = t.n === 0;
+      // очистить список кроме заглушки
+      listEl.querySelectorAll('.sum-row').forEach((el) => el.remove());
+      emptyEl.hidden = t.n > 0;
+      for (const id in state) {
+        const qty = state[id]; if (!qty) continue;
+        const it = catalog[id];
+        const li = document.createElement('li');
+        li.className = 'sum-row';
+        li.innerHTML =
+          '<span class="sum-row__name"><b>' + it.name + '</b></span>' +
+          '<span class="sum-row__mini">' +
+            '<button type="button" data-mini-dec="' + id + '" aria-label="Убрать одну">−</button>' +
+            '<span>' + qty + '</span>' +
+            '<button type="button" data-mini-inc="' + id + '" aria-label="Добавить одну">+</button>' +
+          '</span>' +
+          '<span class="sum-row__sum">' + fmt(qty * it.price) + ' ₽</span>';
+        listEl.appendChild(li);
+      }
+    };
+
+    // Клики по степперам позиций
+    root.querySelector('.order-main').addEventListener('click', (e) => {
+      const incBtn = e.target.closest('[data-inc]');
+      const decBtn = e.target.closest('[data-dec]');
+      if (!incBtn && !decBtn) return;
+      const row = e.target.closest('[data-item]');
+      if (!row) return;
+      if (incBtn) inc(row.dataset.id); else dec(row.dataset.id);
+    });
+
+    // Клики в сводке (mini +/-)
+    listEl.addEventListener('click', (e) => {
+      const i = e.target.closest('[data-mini-inc]');
+      const d = e.target.closest('[data-mini-dec]');
+      if (i) inc(i.getAttribute('data-mini-inc'));
+      if (d) dec(d.getAttribute('data-mini-dec'));
+    });
+
+    clearBtn.addEventListener('click', () => { state = {}; persist(); render(); statusEl.hidden = true; });
+
+    // Способ получения: адрес только для доставки
+    const syncMode = () => {
+      const checked = form.querySelector('input[name="mode"]:checked');
+      const delivery = (checked ? checked.value : 'Доставка') === 'Доставка';
+      addressInp.hidden = !delivery;
+      addressInp.required = delivery;
+    };
+    form.querySelectorAll('input[name="mode"]').forEach((r) => r.addEventListener('change', syncMode));
+    syncMode();
+
+    const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const setStatus = (msg, kind) => { statusEl.hidden = false; statusEl.textContent = msg; statusEl.className = 'order-status' + (kind ? ' order-status--' + kind : ''); };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const t = totals();
+      if (t.n === 0) { setStatus('Добавьте хотя бы одну позицию.', 'err'); return; }
+      const fd = new FormData(form);
+      const mode = fd.get('mode');
+      const name = String(fd.get('name') || '').trim();
+      const phone = String(fd.get('phone') || '').trim();
+      const address = String(fd.get('address') || '').trim();
+      const comment = String(fd.get('comment') || '').trim();
+      if (!name || !phone || (mode === 'Доставка' && !address)) {
+        setStatus('Заполните имя, телефон' + (mode === 'Доставка' ? ' и адрес.' : '.'), 'err');
+        return;
+      }
+
+      const lines = [];
+      for (const id in state) { const it = catalog[id]; lines.push('• ' + it.name + ' × ' + state[id] + ' — ' + fmt(state[id] * it.price) + ' ₽'); }
+      const text =
+        '🍔 <b>Новый заказ — TROHAMBURGER</b>\n\n' +
+        '<b>Состав:</b>\n' + lines.map(esc).join('\n') + '\n' +
+        '<b>Итого: ' + fmt(t.sum) + ' ₽</b>\n\n' +
+        '<b>Получение:</b> ' + esc(mode) + '\n' +
+        '<b>Имя:</b> ' + esc(name) + '\n' +
+        '<b>Телефон:</b> ' + esc(phone) + '\n' +
+        (mode === 'Доставка' ? '<b>Адрес:</b> ' + esc(address) + '\n' : '') +
+        (comment ? '<b>Комментарий:</b> ' + esc(comment) + '\n' : '');
+
+      const token = root.dataset.tgToken;
+      const chat = root.dataset.tgChat;
+      const submitBtn = form.querySelector('[data-submit]');
+      submitBtn.disabled = true;
+      setStatus('Отправляем заказ…', '');
+
+      const done = () => {
+        state = {}; persist(); render();
+        setStatus('Готово! Заказ принят — перезвоним для подтверждения. Спасибо 🔥', 'ok');
+        form.reset(); syncMode();
+        submitBtn.disabled = false;
+      };
+
+      if (token && chat) {
+        try {
+          const r = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chat, text: text, parse_mode: 'HTML' }),
+          });
+          if (!r.ok) throw new Error('tg');
+          done();
+        } catch (err) {
+          submitBtn.disabled = false;
+          setStatus('Не удалось отправить автоматически. Позвоните нам — заказ уже собран.', 'err');
+        }
+      } else {
+        setTimeout(done, 400);
+      }
+    });
+
+    render();
+  }
+</script>
