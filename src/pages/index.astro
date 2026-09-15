@@ -350,23 +350,35 @@ const steps = [
   @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   .marquee:hover .marquee__track { animation-play-state: paused; }
 
-  /* ---------- ПОДХОД ---------- */
-  .approach__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1rem, 2vw, 1.5rem); }
+  /* ---------- ПОДХОД (редакционный ряд без «коробок») ---------- */
+  .approach__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
   .approach__item {
     position: relative;
-    padding: clamp(1.5rem, 2.5vw, 2rem) clamp(1.25rem, 2vw, 1.75rem);
-    background: linear-gradient(180deg, rgba(255,180,0,0.05), rgba(255,180,0,0) 55%), var(--char-3);
-    border: 1px solid var(--line-soft);
-    border-top: 3px solid var(--ember);
-    border-radius: 0 0 var(--radius) var(--radius);
-    transition: transform 0.4s var(--ease), border-color 0.4s var(--ease);
+    padding: clamp(1.75rem, 2.5vw, 2.5rem) clamp(1.5rem, 2vw, 2rem);
+    border-left: 1px solid var(--line-soft);
+    background: transparent;
   }
-  .approach__item:hover { transform: translateY(-6px); border-top-color: var(--amber); }
+  .approach__item:first-child { border-left: 0; padding-left: 0; }
+  .approach__item::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 0;
+    width: 2.5rem; height: 3px;
+    background: var(--ember);
+  }
+  .approach__item:first-child::before { left: 0; }
   .approach__n {
-    font-family: var(--font-display); font-weight: 700; font-size: 2.6rem; line-height: 1;
-    color: transparent; -webkit-text-stroke: 1.5px var(--amber); display: block; margin-bottom: 0.9rem;
+    display: block; margin-bottom: 0.75rem;
+    font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; line-height: 1;
+    color: var(--amber); letter-spacing: 0.05em;
   }
-  .approach__h { margin-bottom: 0.6rem; font-size: 1.3rem; }
+  .approach__h { margin-bottom: 0.6rem; font-size: 1.25rem; }
+  .approach__item p { font-size: 0.95rem; }
 
   /* ---------- ВИТРИНА ---------- */
   .burger-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1.25rem, 2vw, 1.75rem); }
@@ -455,6 +467,7 @@ const steps = [
   /* ---------- RESPONSIVE ---------- */
   @media (max-width: 1040px) {
     .approach__grid { grid-template-columns: repeat(2, 1fr); }
+    .approach__item:nth-child(3) { border-left: 0; padding-left: 0; }
     .burger-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 940px) {
@@ -467,6 +480,8 @@ const steps = [
   }
   @media (max-width: 560px) {
     .approach__grid, .burger-grid { grid-template-columns: 1fr; }
+    .approach__item { border-left: 0; padding-left: 0; padding-top: 2rem; }
+    .approach__item::before { width: 2rem; }
     .hero__facts { grid-template-columns: 1fr 1fr; }
     .hero__stamp--1 { top: 20%; left: 4%; }
     .hero__stamp--2 { top: 30%; right: 4%; }

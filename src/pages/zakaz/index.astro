@@ -154,16 +154,33 @@ const jsonLd = [restaurantSchema({ image: '/og-cover.svg' })];
   .order-summary__title { font-size: 1.5rem; }
   .order-summary__clear { background: transparent; border: 0; color: var(--ink-mute); font-size: 0.8rem; cursor: pointer; }
   .order-summary__clear:hover { color: var(--ember); }
-  .order-summary__list { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: 0.6rem; max-height: 34vh; overflow-y: auto; }
+  .order-summary__list { list-style: none; padding: 0; margin: 0 0 0.5rem; display: grid; gap: 0; max-height: 36vh; overflow-y: auto; }
   .order-summary__empty { color: var(--ink-mute); font-size: 0.9rem; padding: 0.5rem 0; }
-  .sum-row { display: flex; align-items: center; gap: 0.6rem; font-size: 0.9rem; }
-  .sum-row__name { flex: 1; min-width: 0; }
+  .sum-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 0.75rem; row-gap: 0.5rem;
+    align-items: center;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .sum-row:last-child { border-bottom: 0; }
+  .sum-row__name { grid-column: 1; grid-row: 1; min-width: 0; font-size: 0.98rem; }
   .sum-row__name b { font-weight: 600; }
-  .sum-row__mini { display: inline-flex; align-items: center; gap: 0.1rem; }
-  .sum-row__mini button { width: 1.5rem; height: 1.5rem; border: 1px solid var(--line); background: var(--char-4); color: var(--cream); border-radius: 50%; font-family: var(--font-display); cursor: pointer; line-height: 1; }
-  .sum-row__mini button:hover { border-color: var(--amber); color: var(--amber); }
-  .sum-row__mini span { min-width: 1.2rem; text-align: center; font-weight: 700; }
-  .sum-row__sum { min-width: 4.2rem; text-align: right; font-family: var(--font-display); font-weight: 700; color: var(--amber); }
+  .sum-row__sum { grid-column: 2; grid-row: 1; text-align: right; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--amber); white-space: nowrap; }
+  .sum-row__mini {
+    grid-column: 1 / -1; grid-row: 2; justify-self: start;
+    display: inline-flex; align-items: center;
+    background: var(--char-2); border: 1px solid var(--line); border-radius: 999px;
+  }
+  .sum-row__mini button {
+    width: 1.9rem; height: 1.9rem; display: grid; place-items: center;
+    border: 0; background: transparent; color: var(--cream);
+    font-family: var(--font-display); font-size: 1.25rem; line-height: 1; cursor: pointer; border-radius: 50%;
+    transition: background 0.2s var(--ease), color 0.2s var(--ease);
+  }
+  .sum-row__mini button:hover { background: rgba(255,180,0,0.18); color: var(--amber); }
+  .sum-row__mini span { min-width: 1.7rem; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 1rem; }
   .order-summary__total { display: flex; align-items: baseline; justify-content: space-between; padding-top: 0.9rem; border-top: 1px solid var(--line); font-family: var(--font-display); text-transform: uppercase; font-weight: 600; }
   .order-summary__sum { font-weight: 700; font-size: 1.6rem; color: var(--amber); }
 
