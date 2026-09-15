@@ -18,7 +18,6 @@ const { transparent = false, currentPath = '' } = Astro.props;
   <div class="topbar">
     <div class="container topbar__inner">
       <span class="topbar__hours" aria-label="Часы работы">
-        <span class="topbar__dot" aria-hidden="true"></span>
         {BUSINESS.openingHoursDisplay.map((h) => (
           <span class="topbar__slot"><b>{h.label}</b> {h.value}</span>
         ))}
@@ -108,21 +107,16 @@ const { transparent = false, currentPath = '' } = Astro.props;
   .is-scrolled .topbar { max-height: 0; opacity: 0; border-color: transparent; }
   .topbar__inner {
     display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-    min-height: 44px;
-    font-family: var(--font-display);
-    font-size: 0.72rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+    min-height: 42px;
+    font-family: var(--font-body);
+    font-size: 0.82rem; font-weight: 400; letter-spacing: 0;
     color: var(--cream-soft);
   }
-  .topbar__hours { display: inline-flex; align-items: center; gap: 1.1rem; flex-wrap: wrap; }
-  .topbar__slot b { color: var(--cream); font-weight: 700; }
-  .topbar__dot {
-    width: 8px; height: 8px; border-radius: 50%; background: #4fc26b;
-    box-shadow: 0 0 0 0 rgba(79,194,107,0.55); animation: livePulse 2.4s ease-out infinite; flex: none;
-  }
-  @keyframes livePulse { 0% { box-shadow: 0 0 0 0 rgba(79,194,107,0.5); } 70%,100% { box-shadow: 0 0 0 7px rgba(79,194,107,0); } }
-  .topbar__right { display: inline-flex; align-items: center; gap: 1.25rem; }
-  .topbar__hand { font-family: var(--font-hand); text-transform: none; letter-spacing: 0; font-size: 1.15rem; color: var(--amber); }
-  .topbar__phone { color: var(--cream); letter-spacing: 0.08em; transition: color 0.3s var(--ease); }
+  .topbar__hours { display: inline-flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .topbar__slot b { color: var(--cream); font-weight: 600; }
+  .topbar__right { display: inline-flex; align-items: center; gap: 1.4rem; }
+  .topbar__hand { font-family: var(--font-hand); font-size: 1.15rem; color: var(--amber); }
+  .topbar__phone { color: var(--cream); font-weight: 600; transition: color 0.3s var(--ease); }
   .topbar__phone:hover { color: var(--amber); }
 
   .site-header__inner {
@@ -247,7 +241,8 @@ const { transparent = false, currentPath = '' } = Astro.props;
   }
   @media (max-width: 760px) {
     .topbar__hand { display: none; }
-    .topbar__inner { font-size: 0.66rem; letter-spacing: 0.08em; }
+    .topbar__inner { font-size: 0.76rem; }
+    .topbar__hours { gap: 1rem; }
   }
   @media (max-width: 560px) {
     .topbar__hours { gap: 0.7rem; }
