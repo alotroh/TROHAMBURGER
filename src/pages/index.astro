@@ -36,10 +36,6 @@ const steps = [
         <h1 id="hero-title" class="hero__title">
           Смэшни.<br /><span class="flame">Зажарь.</span> Повтори.
         </h1>
-        <p class="lead hero__lead">
-          Бургерная, где котлету жмут вручную на чугуне, а соус варят на кухне, а не открывают из бутылки.
-          <span class="hl">Жарим только под заказ.</span>
-        </p>
         <div class="hero__actions">
           <a class="btn" href="/zakaz/" data-track="click_order">Собрать заказ <span class="arrow" aria-hidden="true">→</span></a>
           <a class="link-arrow" href="/menu/">Всё меню</a>
@@ -66,45 +62,11 @@ const steps = [
     </div>
   </div>
 
-  <!-- 02 · ПОДХОД -->
-  <section class="section panel approach" aria-labelledby="approach-title">
-    <div class="container">
-      <div class="section-head approach__head reveal">
-        <span class="index-num">01 · Почему сюда возвращаются</span>
-        <span class="approach__stamp stamp stamp--ember">без<br />понтов</span>
-        <h2 id="approach-title" class="approach__title">Не фастфуд.<br /><span class="flame">Просто честный бургер</span></h2>
-        <p class="lead">Мы делаем немного позиций, но каждую доводим до ума. Проще выбрать, вкуснее есть.</p>
-      </div>
-      <div class="approach__grid">
-        <div class="approach__item reveal" style="--i:0">
-          <span class="approach__n">01</span>
-          <h3 class="approach__h">Мясо, а не «состав»</h3>
-          <p class="muted">Говядина, соль, перец. Всё. Рубим сами каждое утро, поэтому знаем, что в котлете.</p>
-        </div>
-        <div class="approach__item reveal" style="--i:1">
-          <span class="approach__n">02</span>
-          <h3 class="approach__h">Живой огонь</h3>
-          <p class="muted">Чугунная поверхность и высокий жар. Та самая корочка получается только так, микроволновка не поможет.</p>
-        </div>
-        <div class="approach__item reveal" style="--i:2">
-          <span class="approach__n">03</span>
-          <h3 class="approach__h">Соусы свои</h3>
-          <p class="muted">Шесть соусов варим на кухне. Рецепт «Трохи» не отдадим даже под пытками картошкой фри.</p>
-        </div>
-        <div class="approach__item reveal" style="--i:3">
-          <span class="approach__n">04</span>
-          <h3 class="approach__h">Под заказ</h3>
-          <p class="muted">Ничего не лежит под лампой. Заказали — тогда и пошли на гриль. Да, чуть дольше. Да, оно того стоит.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 03 · ВИТРИНА БУРГЕРОВ -->
+  <!-- 02 · ВИТРИНА БУРГЕРОВ -->
   <section class="section panel burgers" aria-labelledby="burgers-title" id="menu-preview">
     <div class="container">
       <div class="section-head reveal">
-        <span class="index-num">02 · Наши бургеры</span>
+        <span class="index-num">01 · Наши бургеры</span>
         <h2 id="burgers-title">Выбирай <span class="flame">свой</span></h2>
         <p class="muted">Восемь бургеров, каждый доведён до ума. Жми «Собрать заказ» — и плюсуй, что хочешь.</p>
       </div>
@@ -135,6 +97,40 @@ const steps = [
     </div>
   </section>
 
+  <!-- 03 · ПОДХОД -->
+  <section class="section panel approach" aria-labelledby="approach-title">
+    <div class="container">
+      <div class="section-head approach__head reveal">
+        <span class="index-num">02 · Почему сюда возвращаются</span>
+        <span class="approach__stamp stamp stamp--ember">без<br />понтов</span>
+        <h2 id="approach-title" class="approach__title">Не фастфуд.<br /><span class="flame">Просто честный бургер</span></h2>
+        <p class="lead">Мы делаем немного позиций, но каждую доводим до ума. Проще выбрать, вкуснее есть.</p>
+      </div>
+      <div class="approach__grid">
+        <div class="approach__item reveal" style="--i:0">
+          <span class="approach__n">01</span>
+          <h3 class="approach__h">Мясо, а не «состав»</h3>
+          <p class="muted">Говядина, соль, перец. Всё. Рубим сами каждое утро, поэтому знаем, что в котлете.</p>
+        </div>
+        <div class="approach__item reveal" style="--i:1">
+          <span class="approach__n">02</span>
+          <h3 class="approach__h">Живой огонь</h3>
+          <p class="muted">Чугунная поверхность и высокий жар. Та самая корочка получается только так, микроволновка не поможет.</p>
+        </div>
+        <div class="approach__item reveal" style="--i:2">
+          <span class="approach__n">03</span>
+          <h3 class="approach__h">Соусы свои</h3>
+          <p class="muted">Шесть соусов варим на кухне. Рецепт «Трохи» не отдадим даже под пытками картошкой фри.</p>
+        </div>
+        <div class="approach__item reveal" style="--i:3">
+          <span class="approach__n">04</span>
+          <h3 class="approach__h">Под заказ</h3>
+          <p class="muted">Ничего не лежит под лампой. Заказали — тогда и пошли на гриль. Да, чуть дольше. Да, оно того стоит.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- 04 · КАК ГОТОВИМ -->
   <section class="section panel process" aria-labelledby="process-title">
     <div class="container process__inner">
@@ -152,7 +148,7 @@ const steps = [
       <div class="process__text">
         <div class="section-head reveal">
           <span class="index-num">03 · Как готовим</span>
-          <h2 id="process-title">Четыре шага<br /><span class="flame">до вашего стола</span></h2>
+          <h2 id="process-title" class="approach__title">Четыре шага<br /><span class="flame">до вашего стола</span></h2>
         </div>
         <ol class="steps-list">
           {steps.map((s, i) => (
@@ -244,11 +240,11 @@ const steps = [
   /* ---------- HERO ---------- */
   .hero {
     position: relative;
-    min-height: 100vh;
+    min-height: 86vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding-top: clamp(6.5rem, 12vw, 9rem);
+    padding-top: clamp(6rem, 11vw, 8.5rem);
     padding-bottom: clamp(2rem, 5vw, 3.5rem);
     isolation: isolate;
   }
