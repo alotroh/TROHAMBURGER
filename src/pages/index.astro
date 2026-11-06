@@ -369,7 +369,9 @@ const layers = [
   .explode {
     --p: 0; /* 0…1 — прогресс разборки, ставит BurgerStage */
     position: relative;
-    height: 260vh;
+    /* Высокая секция = длинный «залипающий» скролл, на котором бургер
+       плавно разлетается на ингредиенты. */
+    height: 220vh;
   }
   .explode__sticky {
     position: sticky;
@@ -623,7 +625,7 @@ const layers = [
         rgba(8,6,4,0.5) 44%, rgba(8,6,4,0.9) 66%, rgba(8,6,4,0.98) 100%);
     }
     /* Бургер сверху, подписи — внизу экрана на тёмной подложке */
-    .explode { height: 230vh; }
+    .explode { height: 200vh; }
     .explode__sticky { align-items: flex-end; }
     .explode__inner {
       grid-template-columns: 1fr;
