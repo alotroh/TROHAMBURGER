@@ -147,22 +147,36 @@ const { mode = 'spin' } = Astro.props;
 
   /* ---------- Режим video: раскадровка ---------- */
   .stage--video {
-    /* Почти чёрный, как фон самого видео — тёмные края кадра растворяются в нём. */
-    background: #070605;
+    /* В центре — почти чёрный фон самого видео (края кадра в нём растворяются),
+       к краям экрана мягко переходит в уголь сайта (--char), чтобы фон hero
+       гармонировал с панелями ниже. */
+    background: radial-gradient(125% 100% at 50% 42%, #070605 0%, #070605 46%, #0c0a08 100%);
   }
-  /* Постер и canvas занимают весь экран; кадр вписывается внутрь (contain),
-     поэтому бургер всегда виден целиком, а тёмные поля сливаются с фоном.
-     Никаких масок — на сплошном фоне они не нужны и только дают артефакты. */
+  /* Кадр ограниченного размера по центру — НЕ во весь экран: так бургер не
+     растягивается выше нативного разрешения (остаётся чётким) и не давит.
+     Края кадра размываем мягкой маской, чтобы 16:9-прямоугольник бесшовно
+     растворялся в фоне. Постер и canvas делят одну геометрию. */
   .stage__frame {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    left: 50%;
+    top: 46%;
+    /* По высоте, но не крупнее 680px (< нативных 720 — без апскейла и мыла). */
+    height: min(60vh, 680px);
+    height: min(60svh, 680px);
+    width: auto;
+    aspect-ratio: 16 / 9;
+    transform: translate(-50%, -50%);
     display: block;
-  }
-  img.stage__poster {
-    object-fit: contain;
-    object-position: center;
+    /* Мягко растворяем края кадра: сильнее по бокам (там пустой фон),
+       слабее сверху/снизу (чтобы не срезать взлетевшую булку и соус). */
+    -webkit-mask-image:
+      linear-gradient(90deg, transparent 0%, #000 15%, #000 85%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(90deg, transparent 0%, #000 15%, #000 85%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+    mask-composite: intersect;
   }
   /* Постер лежит поверх, пока canvas не готов; затем плавно уступает ему. */
   .stage__poster { opacity: 1; transition: opacity 0.35s linear; }
@@ -170,17 +184,13 @@ const { mode = 'spin' } = Astro.props;
   .stage--video.is-ready .stage__canvas { opacity: 1; }
   .stage--video.is-ready .stage__poster { opacity: 0; }
 
-  /* На телефоне постер — как и canvas: крупнее и прижат кверху,
-     чтобы под бургером осталось место для текста hero. */
+  /* Телефон: кадр по ширине (чуть с запасом) и выше по экрану — текст hero
+     ложится под бургером. По-прежнему не крупнее нативной ширины (854). */
   @media (max-width: 760px) {
-    img.stage__poster {
-      inset: auto;
-      left: 50%;
-      top: 4%;
-      width: 150vw;
+    .stage__frame {
+      top: 33%;
       height: auto;
-      object-fit: fill;
-      transform: translateX(-50%);
+      width: min(140vw, 92vh);
     }
   }
 
@@ -274,9 +284,15 @@ const { mode = 'spin' } = Astro.props;
         startY = 0;
         endY = vh * 1.5;
       }
+      // Размер canvas = его собственный CSS-бокс (размерный кадр), ×dpr.
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(window.innerWidth * dpr);
-      canvas.height = Math.round(window.innerHeight * dpr);
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.max(1, Math.round(rect.width * dpr));
+      const h = Math.max(1, Math.round(rect.height * dpr));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
       drawn = -1;
     };
 
@@ -289,35 +305,16 @@ const { mode = 'spin' } = Astro.props;
     };
 
     // --- Отрисовка кадра ---
-    // Ландшафт/десктоп: кадр вписывается целиком (contain), по центру.
-    // Портрет/телефон: 16:9-кадр вписался бы по ширине в крошечную полоску,
-    // поэтому увеличиваем до ~1.5× ширины экрана и прижимаем бургер кверху —
-    // он крупный, а под ним остаётся место для текста hero.
+    // Canvas по размеру равен кадру (16:9), поэтому просто растягиваем кадр
+    // на весь холст. Размер и позиция заданы в CSS (.stage__frame), края
+    // размыты маской — здесь только рисуем нужный кадр.
     let drawn = -1;
     const draw = (f: number) => {
       const i = Math.max(0, Math.min(FRAMES - 1, Math.round(f)));
       const img = imgs[i];
       if (!img || i === drawn) return;
-      const cw = canvas.width;
-      const ch = canvas.height;
-      const iw = img.naturalWidth || 1280;
-      const ih = img.naturalHeight || 720;
-      ctx.clearRect(0, 0, cw, ch);
-      let dw, dh, dx, dy;
-      if (ch > cw) {
-        // портрет
-        const s = (cw / iw) * 1.5;
-        dw = iw * s; dh = ih * s;
-        dx = (cw - dw) / 2;        // по центру по ширине (поля кадра обрезаются)
-        dy = ch * 0.4 - dh / 2;    // центр бургера ≈ на 40% высоты экрана
-      } else {
-        // ландшафт/десктоп — contain
-        const s = Math.min(cw / iw, ch / ih);
-        dw = iw * s; dh = ih * s;
-        dx = (cw - dw) / 2;
-        dy = (ch - dh) / 2;
-      }
-      ctx.drawImage(img, dx, dy, dw, dh);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       drawn = i;
     };
 
