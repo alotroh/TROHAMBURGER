@@ -16,26 +16,55 @@ import { Image } from 'astro:assets';
 // Бургер с вырезанным фоном (прозрачный PNG) — лежит на ровном градиенте
 // без прямоугольника и ореола. Исходник: burger-hero.png (см. cutout).
 import burger from '../assets/media/burger-cut.png';
+
+/**
+ * mode="video" (главная): вместо PNG — раскадровка видео (public/burger-frames/).
+ * Первый экран — статичный кадр 0. Прокрутка до конца секции [data-burger-explode]
+ * разбирает бургер на ингредиенты (кадры 0 → PEAK), дальше по странице он
+ * медленно собирается обратно (PEAK → последний кадр).
+ */
+interface Props { mode?: 'spin' | 'video' }
+const { mode = 'spin' } = Astro.props;
 ---
 
-<div class="stage" aria-hidden="true">
-  <div class="stage__orbit" data-burger-orbit>
-    <Image
-      src={burger}
+{mode === 'video' ? (
+  <div class="stage stage--video" aria-hidden="true" data-burger-video>
+    <img
+      class="stage__frame stage__poster"
+      data-burger-poster
+      src="/burger-frames/lg/000.webp"
+      srcset="/burger-frames/sm/000.webp 960w, /burger-frames/lg/000.webp 1280w"
+      sizes="(max-width: 760px) 200vw, 167vh"
+      width="1280"
+      height="720"
       alt=""
-      widths={[520, 760, 1040, 1320]}
-      sizes="(max-width: 720px) 92vw, 760px"
       loading="eager"
       fetchpriority="high"
-      class="stage__img"
+      decoding="async"
     />
+    <canvas class="stage__frame stage__canvas" data-burger-canvas></canvas>
+    <div class="stage__veil" data-burger-veil></div>
   </div>
-  <div class="stage__veil" data-burger-veil></div>
-  <!-- Поднимающийся «пар» над бургером -->
-  <div class="stage__steam" aria-hidden="true">
-    <span></span><span></span><span></span>
+) : (
+  <div class="stage" aria-hidden="true">
+    <div class="stage__orbit" data-burger-orbit>
+      <Image
+        src={burger}
+        alt=""
+        widths={[520, 760, 1040, 1320]}
+        sizes="(max-width: 720px) 92vw, 760px"
+        loading="eager"
+        fetchpriority="high"
+        class="stage__img"
+      />
+    </div>
+    <div class="stage__veil" data-burger-veil></div>
+    <!-- Поднимающийся «пар» над бургером -->
+    <div class="stage__steam" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
   </div>
-</div>
+)}
 
 <style>
   .stage {
@@ -110,6 +139,45 @@ import burger from '../assets/media/burger-cut.png';
     100% { transform: translateY(-180px) scale(1.6); opacity: 0; }
   }
 
+  /* ---------- Режим video: раскадровка ---------- */
+  .stage--video {
+    /* Почти чёрный, как фон самого видео — края кадра растворяются в нём. */
+    background: #070605;
+  }
+  /* Кадр 16:9. На горизонтальном экране — по высоте экрана (бургер целиком,
+     включая взлетевшую верхнюю булку), на вертикальном — по ширине, чтобы
+     бургер помещался. Те же размеры JS использует для canvas. */
+  .stage__frame {
+    position: absolute;
+    left: 50%;
+    top: 48%;
+    height: 96vh;
+    height: 96svh;
+    width: auto;
+    aspect-ratio: 16 / 9;
+    transform: translate(-50%, -50%);
+    /* Мягко растворяем края кадра в фоне */
+    -webkit-mask-image:
+      linear-gradient(90deg, transparent 0%, #000 20%, #000 80%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, #000 9%, #000 88%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(90deg, transparent 0%, #000 20%, #000 80%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, #000 9%, #000 88%, transparent 100%);
+    mask-composite: intersect;
+  }
+  .stage__canvas { opacity: 0; transition: opacity 0.25s linear; }
+  .stage--video.is-ready .stage__canvas { opacity: 1; }
+  .stage--video.is-ready .stage__poster { visibility: hidden; }
+
+  @media (orientation: portrait) {
+    .stage__frame {
+      top: 40%;
+      height: auto;
+      width: min(200vw, 170.67vh);
+    }
+  }
+
   @media (max-width: 720px) {
     .stage__steam { display: none; }
     /* На телефоне бургер выше и чуть меньше — текст hero ложится под ним */
@@ -163,5 +231,136 @@ import burger from '../assets/media/burger-cut.png';
     apply();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll, { passive: true });
+  }
+
+  // ------------------------------------------------------------------
+  // Режим video: прокрутка листает кадры видео на canvas.
+  // ------------------------------------------------------------------
+  const vStage = document.querySelector<HTMLElement>('[data-burger-video]');
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-burger-canvas]');
+  const ctx = canvas?.getContext('2d');
+
+  if (vStage && canvas && ctx && !reduce) {
+    const FRAMES = 120;   // кадров в public/burger-frames/{sm,lg}/
+    const PEAK = 52;      // кадр, где бургер полностью разобран
+    const vVeil = vStage.querySelector<HTMLElement>('[data-burger-veil]');
+    const explode = document.querySelector<HTMLElement>('[data-burger-explode]');
+    const set = window.matchMedia('(max-width: 760px)').matches ? 'sm' : 'lg';
+    const src = (i: number) => `/burger-frames/${set}/${String(i).padStart(3, '0')}.webp`;
+
+    const imgs: (HTMLImageElement | null)[] = new Array(FRAMES).fill(null);
+
+    // --- Геометрия скролла (пересчитывается на resize) ---
+    let exTop = 0;     // где начинается секция разборки
+    let endA = 1;      // scrollY, на котором бургер полностью разобран
+    let maxY = 1;
+    const measure = () => {
+      const vh = window.innerHeight;
+      maxY = Math.max(1, document.documentElement.scrollHeight - vh);
+      if (explode) {
+        const r = explode.getBoundingClientRect();
+        exTop = r.top + window.scrollY;
+        endA = Math.max(1, exTop + r.height - vh);
+      } else {
+        exTop = 0;
+        endA = vh * 1.5;
+      }
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      drawn = -1;
+    };
+
+    const targetFrame = (y: number) => {
+      if (y <= endA) return (y / endA) * PEAK;
+      return PEAK + Math.min(1, (y - endA) / Math.max(1, maxY - endA)) * (FRAMES - 1 - PEAK);
+    };
+
+    // --- Отрисовка ---
+    let drawn = -1;
+    const nearestLoaded = (i: number) => {
+      for (let d = 0; d < FRAMES; d++) {
+        const a = imgs[i - d];
+        if (a) return a;
+        const b = imgs[i + d];
+        if (b) return b;
+      }
+      return null;
+    };
+    const draw = (i: number) => {
+      const img = nearestLoaded(i);
+      if (!img) return;
+      const key = imgs.indexOf(img);
+      if (key === drawn) return;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      drawn = key;
+      if (!vStage.classList.contains('is-ready')) vStage.classList.add('is-ready');
+    };
+
+    // Плавно догоняем нужный кадр, чтобы скролл колесом не «щёлкал».
+    let current = 0;
+    let target = 0;
+    let raf = 0;
+    const tick = () => {
+      current += (target - current) * 0.22;
+      if (Math.abs(target - current) < 0.05) current = target;
+      draw(Math.round(current));
+      raf = current !== target ? requestAnimationFrame(tick) : 0;
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(tick); };
+
+    const update = () => {
+      const y = window.scrollY;
+      target = Math.max(0, Math.min(FRAMES - 1, targetFrame(y)));
+      kick();
+
+      // Прогресс разборки для подписей в секции (CSS-переменная --p, 0…1)
+      if (explode) {
+        const vh = window.innerHeight;
+        const p = (y - (exTop - vh * 0.35)) / Math.max(1, endA - exTop + vh * 0.35);
+        explode.style.setProperty('--p', Math.max(0, Math.min(1, p)).toFixed(3));
+      }
+      // После разборки фон затемняется, чтобы контент читался
+      if (vVeil) {
+        const v = y <= endA ? 0 : Math.min((y - endA) / (window.innerHeight * 0.6), 1) * 0.7;
+        vVeil.style.opacity = v.toFixed(3);
+      }
+    };
+
+    // --- Загрузка кадров: сначала кадр 0, затем разборка, затем остальное ---
+    const order = Array.from({ length: FRAMES }, (_, i) => i);
+    let next = 0;
+    const loadNext = () => {
+      if (next >= order.length) return;
+      const i = order[next++];
+      const im = new Image();
+      im.decoding = 'async';
+      im.onload = () => {
+        imgs[i] = im;
+        // Если пришёл кадр ближе к нужному — перерисуем
+        if (Math.abs(i - Math.round(current)) <= Math.abs(drawn - Math.round(current))) {
+          drawn = -1;
+          draw(Math.round(current));
+        }
+        loadNext();
+      };
+      im.onerror = loadNext;
+      im.src = src(i);
+    };
+
+    measure();
+    update();
+    for (let k = 0; k < 6; k++) loadNext();
+
+    let pending = false;
+    window.addEventListener('scroll', () => {
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(() => { pending = false; update(); });
+    }, { passive: true });
+    window.addEventListener('resize', () => { measure(); update(); draw(Math.round(current)); }, { passive: true });
+    // Высота страницы меняется после загрузки шрифтов/картинок
+    window.addEventListener('load', () => { measure(); update(); });
   }
 </script>

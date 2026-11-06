@@ -26,6 +26,9 @@ interface Props {
   ogImage?: string;
   noindex?: boolean;
   jsonLd?: Record<string, any>[];
+  /** Фон: 'spin' — крутящийся PNG-бургер, 'video' — раскадровка видео,
+   *  которая при скролле разбирает бургер на ингредиенты (главная). */
+  burger?: 'spin' | 'video';
 }
 
 const {
@@ -35,6 +38,7 @@ const {
   ogType = 'website',
   ogImage = '/og-cover.svg',
   jsonLd = [],
+  burger = 'spin',
 } = Astro.props;
 
 const meta = seoKey ? SEO[seoKey] : undefined;
@@ -90,6 +94,13 @@ const currentPath = Astro.url.pathname;
     <link rel="preload" href="/fonts/sol-kol.ttf" as="font" type="font/ttf" crossorigin />
     <link rel="preload" href="/fonts/opsilon.otf" as="font" type="font/otf" crossorigin />
 
+    {burger === 'video' && (
+      <Fragment>
+        <link rel="preload" href="/burger-frames/lg/000.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 761px)" />
+        <link rel="preload" href="/burger-frames/sm/000.webp" as="image" type="image/webp" fetchpriority="high" media="(max-width: 760px)" />
+      </Fragment>
+    )}
+
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
@@ -100,7 +111,7 @@ const currentPath = Astro.url.pathname;
   </head>
 
   <body id="top">
-    <BurgerStage />
+    <BurgerStage mode={burger} />
     <a class="skip-link" href="#main">Перейти к содержимому</a>
     <Header transparent={transparentHeader} currentPath={currentPath} />
     <main id="main">

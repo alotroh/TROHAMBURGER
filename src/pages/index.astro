@@ -17,9 +17,20 @@ const steps = [
   { n: '03', t: 'Плавим сыр', d: 'Чеддер ложится на котлету за минуту до готовности и накрывается крышкой. Пока он не потёк — бургер не собираем.' },
   { n: '04', t: 'Собираем', d: 'Тёплая булка, соус, овощи, котлета. От гриля до вашего подноса — минута, чтобы ничего не остыло.' },
 ];
+
+// Слои бургера — подписи к разборке на скролле (сверху вниз, как в видео)
+const layers = [
+  { t: 'Булка на закваске', d: 'с кунжутом, поджарена на гриле' },
+  { t: 'Салат', d: 'свежий и хрусткий' },
+  { t: 'Томаты и красный лук', d: 'режем прямо перед сборкой' },
+  { t: 'Огурчики', d: 'маринованные, с кислинкой' },
+  { t: 'Чеддер', d: 'плавим под крышкой' },
+  { t: 'Смэш-котлета', d: 'говядина, рубим сами' },
+  { t: 'Соусы', d: 'варим на своей кухне' },
+];
 ---
 
-<BaseLayout seoKey="home" transparentHeader={true} jsonLd={jsonLd}>
+<BaseLayout seoKey="home" transparentHeader={true} jsonLd={jsonLd} burger="video">
   <!-- 01 · HERO — бургер крутится за текстом -->
   <section class="hero" aria-labelledby="hero-title">
     <div class="container hero__top">
@@ -50,6 +61,28 @@ const steps = [
           </li>
         ))}
       </ul>
+    </div>
+  </section>
+
+  <!-- 01½ · РАЗБОРКА — прозрачная «дорожка» прокрутки. Пока она едет,
+       бургер на фоне разлетается на ингредиенты (см. BurgerStage, mode="video"). -->
+  <section class="explode" data-burger-explode aria-labelledby="explode-title">
+    <div class="explode__sticky">
+      <div class="container explode__inner">
+        <div class="explode__head">
+          <span class="index-num">Что внутри</span>
+          <h2 id="explode-title" class="explode__title">Разбираем<br /><span class="flame">по слоям</span></h2>
+          <p class="explode__lead">Ничего лишнего — только то, что сами бы съели.</p>
+        </div>
+        <ol class="explode__list">
+          {layers.map((l, i) => (
+            <li class="explode__item" style={`--i:${i}`}>
+              <span class="explode__n">{String(i + 1).padStart(2, '0')}</span>
+              <span class="explode__t">{l.t}<small>{l.d}</small></span>
+            </li>
+          ))}
+        </ol>
+      </div>
     </div>
   </section>
 
@@ -332,6 +365,93 @@ const steps = [
   .hero__fact-num { font-family: var(--font-body); font-weight: 700; font-size: 1.7rem; color: var(--amber); line-height: 1; }
   .hero__fact-label { font-size: 0.82rem; color: var(--cream-soft); }
 
+  /* ---------- РАЗБОРКА (scroll-трек поверх видео-фона) ---------- */
+  .explode {
+    --p: 0; /* 0…1 — прогресс разборки, ставит BurgerStage */
+    position: relative;
+    height: 260vh;
+  }
+  .explode__sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+  .explode__inner {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 16rem) 1fr minmax(0, 15rem);
+    align-items: center;
+    gap: 2rem;
+  }
+  .explode__head {
+    grid-column: 1;
+    opacity: clamp(0, calc(var(--p) * 5 - 0.3), 1);
+    transform: translateY(calc((1 - clamp(0, calc(var(--p) * 5 - 0.3), 1)) * 30px));
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.8);
+  }
+  .explode__title {
+    font-family: var(--font-accent);
+    font-size: clamp(1.7rem, 1rem + 2vw, 2.8rem);
+    line-height: 1.05;
+    letter-spacing: 0;
+    margin: 0.6rem 0 1rem;
+  }
+  .explode__lead { color: var(--cream-soft); font-size: 0.95rem; max-width: 28ch; }
+  .explode__list {
+    grid-column: 3;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.9rem;
+  }
+  .explode__item {
+    --o: clamp(0, calc(var(--p) * 9 - var(--i) * 0.9 - 1), 1);
+    display: grid;
+    grid-template-columns: 2.2rem 1fr;
+    align-items: baseline;
+    gap: 0.4rem;
+    opacity: var(--o);
+    transform: translateX(calc((1 - var(--o)) * 28px));
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85);
+  }
+  .explode__n {
+    font-family: var(--font-accent);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ember);
+  }
+  .explode__t {
+    display: grid;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--cream);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .explode__t small {
+    font-family: var(--font-text);
+    font-weight: 400;
+    font-size: 0.82rem;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--cream-soft);
+  }
+
+  /* Без JS или с «уменьшить движение» — подписи видны сразу */
+  :global(html:not(.js)) .explode__head,
+  :global(html:not(.js)) .explode__item { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .explode { height: auto; }
+    .explode__sticky { position: static; height: auto; padding-block: 4rem; }
+    .explode__head, .explode__item { opacity: 1; transform: none; }
+  }
+
   /* ---------- MARQUEE ---------- */
   .marquee { overflow: hidden; padding-block: 1.1rem; border-block: 1px solid var(--line); }
   .marquee__track { display: flex; width: max-content; animation: marqueeScroll 26s linear infinite; }
@@ -485,6 +605,8 @@ const steps = [
     .burger-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 940px) {
+    .explode__inner { grid-template-columns: minmax(0, 14rem) 1fr minmax(0, 14rem); gap: 1rem; }
+    .explode__t { font-size: 0.9rem; }
     .hero__bottom { grid-template-columns: 1fr; align-items: start; }
     .hero__facts { max-width: 30rem; }
     .process__inner { grid-template-columns: 1fr; }
@@ -500,6 +622,32 @@ const steps = [
         rgba(8,6,4,0) 0%, rgba(8,6,4,0) 24%,
         rgba(8,6,4,0.5) 44%, rgba(8,6,4,0.9) 66%, rgba(8,6,4,0.98) 100%);
     }
+    /* Бургер сверху, подписи — внизу экрана на тёмной подложке */
+    .explode { height: 230vh; }
+    .explode__sticky { align-items: flex-end; }
+    .explode__inner {
+      grid-template-columns: 1fr;
+      gap: 0.9rem;
+      padding-top: 3.5rem;
+      padding-bottom: 1.5rem;
+      background: linear-gradient(180deg, rgba(7,6,5,0) 0%, rgba(7,6,5,0.85) 30%, rgba(7,6,5,0.96) 100%);
+    }
+    .explode__head, .explode__list { grid-column: 1; }
+    .explode__title { font-size: 1.6rem; margin: 0.3rem 0 0; }
+    .explode__lead { display: none; }
+    .explode__list { display: flex; flex-wrap: wrap; gap: 0.45rem 0.5rem; }
+    .explode__item {
+      display: inline-flex;
+      gap: 0.35rem;
+      padding: 0.35rem 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(13, 11, 9, 0.7);
+      transform: translateY(calc((1 - var(--o)) * 12px));
+    }
+    .explode__n { font-size: 0.75rem; }
+    .explode__t { font-size: 0.75rem; }
+    .explode__t small { display: none; }
     .hero__title { -webkit-text-stroke-width: 1.2px; }
     .hero__title .flame { -webkit-text-stroke-width: 1.2px; }
     .hero__text { max-width: 100%; }
